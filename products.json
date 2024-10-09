@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "title": "Cotton Saree (Red)",
+    "price": 1999,
+    "image": "images/products/product1.jpg",
+    "description": "Beautiful red cotton saree with traditional design"
+  },
+  {
+    "id": "2",
+    "title": "Cotton Shirt (Blue)",
+    "price": 799,
+    "image": "images/products/product2.jpg",
+    "description": "Comfortable blue cotton shirt for everyday wear"
+  },
+  {
+    "id": "3",
+    "title": "Cotton Dhoti (White)",
+    "price": 599,
+    "image": "images/products/product3.jpg",
+    "description": "Classic white cotton dhoti for traditional occasions"
+  }
+]
