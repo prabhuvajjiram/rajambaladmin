@@ -1,69 +1,99 @@
 <?php
 header('Content-Type: application/json');
+require_once 'db_config.php';
+
+function resizeImage($sourcePath, $targetPath, $maxWidth, $maxHeight) {
+    list($width, $height, $type) = getimagesize($sourcePath);
+    
+    // Calculate new dimensions
+    $ratio = min($maxWidth / $width, $maxHeight / $height);
+    $newWidth = $width * $ratio;
+    $newHeight = $height * $ratio;
+    
+    $newImage = imagecreatetruecolor($newWidth, $newHeight);
+    
+    switch ($type) {
+        case IMAGETYPE_JPEG:
+            $sourceImage = imagecreatefromjpeg($sourcePath);
+            break;
+        case IMAGETYPE_PNG:
+            $sourceImage = imagecreatefrompng($sourcePath);
+            imagealphablending($newImage, false);
+            imagesavealpha($newImage, true);
+            break;
+        case IMAGETYPE_GIF:
+            $sourceImage = imagecreatefromgif($sourcePath);
+            break;
+        default:
+            return false;
+    }
+    
+    imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+    
+    switch ($type) {
+        case IMAGETYPE_JPEG:
+            imagejpeg($newImage, $targetPath, 90);
+            break;
+        case IMAGETYPE_PNG:
+            imagepng($newImage, $targetPath);
+            break;
+        case IMAGETYPE_GIF:
+            imagegif($newImage, $targetPath);
+            break;
+    }
+    
+    imagedestroy($sourceImage);
+    imagedestroy($newImage);
+    
+    return true;
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $upload_dir = "images/products/";
-    $product_data_file = "products.json";
-
-    // Generate a unique ID for the product
-    $product_id = uniqid();
-
-    // Handle file upload
-    $file_name = $product_id . "_" . basename($_FILES["image"]["name"]);
+    $file_extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
+    $base_name = pathinfo($_FILES["image"]["name"], PATHINFO_FILENAME);
+    $file_name = $base_name . "_" . uniqid() . "." . $file_extension;
     $target_file = $upload_dir . $file_name;
-    $uploadOk = 1;
-    $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-
-    // Check if image file is an actual image or fake image
-    $check = getimagesize($_FILES["image"]["tmp_name"]);
-    if($check !== false) {
-        $uploadOk = 1;
-    } else {
-        echo json_encode(["status" => "error", "message" => "File is not an image."]);
-        exit;
-    }
-
-    // Check file size
-    if ($_FILES["image"]["size"] > 5000000) {
-        echo json_encode(["status" => "error", "message" => "Sorry, your file is too large."]);
-        exit;
-    }
-
-    // Allow certain file formats
-    if($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg"
-    && $imageFileType != "gif" ) {
-        echo json_encode(["status" => "error", "message" => "Sorry, only JPG, JPEG, PNG & GIF files are allowed."]);
-        exit;
-    }
-
-    // If everything is ok, try to upload file
-    if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-        // File uploaded successfully, now save product data
-        $product = [
-            "id" => $product_id,
-            "title" => $_POST["title"],
-            "price" => floatval($_POST["price"]),
-            "description" => $_POST["description"],
-            "image" => $upload_dir . $file_name
-        ];
-
-        // Read existing products
-        $products = [];
-        if (file_exists($product_data_file)) {
-            $products = json_decode(file_get_contents($product_data_file), true);
+    
+    $temp_file = $_FILES["image"]["tmp_name"];
+    
+    if (resizeImage($temp_file, $target_file, 800, 800)) {
+        $title = mysqli_real_escape_string($conn, $_POST["title"]);
+        $price = floatval($_POST["price"]);
+        $description = mysqli_real_escape_string($conn, $_POST["description"]);
+        
+        $sql = "INSERT INTO products (title, price, description, image_path) VALUES (?, ?, ?, ?)";
+        
+        if($stmt = mysqli_prepare($conn, $sql)){
+            mysqli_stmt_bind_param($stmt, "sdss", $title, $price, $description, $target_file);
+            
+            if(mysqli_stmt_execute($stmt)){
+                $product_id = mysqli_insert_id($conn);
+                echo json_encode([
+                    "status" => "success", 
+                    "message" => "The product has been uploaded and resized successfully.",
+                    "product" => [
+                        "id" => $product_id,
+                        "title" => $title,
+                        "price" => $price,
+                        "description" => $description,
+                        "image" => $target_file
+                    ]
+                ]);
+            } else {
+                echo json_encode(["status" => "error", "message" => "Error: " . mysqli_error($conn)]);
+            }
+            
+            mysqli_stmt_close($stmt);
+        } else {
+            echo json_encode(["status" => "error", "message" => "Error preparing statement: " . mysqli_error($conn)]);
         }
-
-        // Add new product
-        $products[] = $product;
-
-        // Save updated products data
-        file_put_contents($product_data_file, json_encode($products));
-
-        echo json_encode(["status" => "success", "message" => "The product has been uploaded successfully.", "product" => $product]);
     } else {
-        echo json_encode(["status" => "error", "message" => "Sorry, there was an error uploading your file."]);
+        echo json_encode(["status" => "error", "message" => "Sorry, there was an error uploading and resizing your file."]);
     }
 } else {
     echo json_encode(["status" => "error", "message" => "Invalid request method."]);
 }
+
+mysqli_close($conn);
 ?>

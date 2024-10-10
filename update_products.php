@@ -1,4 +1,4 @@
-<?php
+/*<?php
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -19,4 +19,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } else {
     echo json_encode(["status" => "error", "message" => "Invalid request method."]);
 }
+?>*/
+
+<?php
+header('Content-Type: application/json');
+require_once 'db_config.php';
+
+$sql = "SELECT * FROM products";
+$result = $conn->query($sql);
+
+$products = [];
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        $products[] = [
+            'id' => $row['id'],
+            'title' => $row['title'],
+            'price' => floatval($row['price']),
+            'description' => $row['description'],
+            'image' => $row['image_path']
+        ];
+    }
+}
+
+echo json_encode($products);
+
+$conn->close();
 ?>

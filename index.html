@@ -3,42 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Rajambal Cottons offers premium quality cotton products including sarees, churidar, and dhotis. Experience comfort and style with our traditional and modern designs.">
     <title>Rajambal Cottons - Premium Cotton Products</title>
+    
+    <!-- Inline critical CSS -->
+    <style>
+        /* Add only the most critical styles here */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+        .header {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+    </style>
+    
+    <!-- Preload fonts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"></noscript>
+    
+    <!-- Load main CSS -->
     <link rel="stylesheet" href="css/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Defer Material Icons -->
+    <link rel="preload" href="https://fonts.googleapis.com/icon?family=Material+Icons" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></noscript>
+    
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','G-MQ8HF6R671');</script>
+    <!-- End Google Tag Manager -->
 </head>
 <body>
+	<!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=G-MQ8HF6R671"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="images/shirt-icon.svg" alt="Rajambal Cottons Logo" class="logo-icon">
+                <a href="#home">
+                    <img src="images/rc.svg" alt="Rajambal Cottons Logo" class="logo-icon">
+                </a>
                 <span class="logo-text">Rajambal Cottons</span>
             </div>
-            <nav>
+            <button class="menu-toggle" aria-label="Toggle menu">
+                <span class="hamburger"></span>
+            </button>
+            <nav class="main-nav">
                 <ul>
                     <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
                     <li><a href="#products">Products</a></li>
+                    <li><a href="#about">About</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
             </nav>
+            <button class="cart-toggle" aria-label="Open cart">
+                <span class="material-icons">shopping_cart</span>
+                <span class="cart-count">0</span>
+            </button>
         </div>
     </header>
 
+    <!-- Cart Menu -->
+    <div class="cart-menu">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items">
+            <!-- Cart items will be dynamically added here -->
+        </div>
+        <div class="cart-total">
+            <span>Total:</span>
+            <span class="total-amount">₹0</span>
+        </div>
+        <button class="btn btn-primary checkout-btn">Checkout</button>
+    </div>
+
     <main>
-        <!-- Your main content here -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Premium Cotton Products</h1>
+                <p>Experience the comfort and quality of Rajambal Cottons</p>
+                <a href="#products" class="btn btn-primary">Shop Now</a>
+            </div>
+        </section>
+
+        <section id="products" class="products">
+            <div class="container">
+                <h2>Our Products</h2>
+                <div class="product-grid">
+                    <!-- Product cards will be dynamically inserted here -->
+                </div>
+                <div class="more-products-button">
+                    <a href="products.html" class="btn btn-primary">More Products</a>
+                </div>
+            </div>
+        </section>
+
+    <section id="video" class="video">
+        <div class="container">
+            <h2>Our Story</h2>
+            <div class="video-container" data-src="https://www.youtube.com/embed/ksgnHnXL-PI">
+                <div class="video-placeholder">
+                    <img src="images/video-placeholder-small.jpg" alt="Video Placeholder">
+                    <button class="play-button">Play Video</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+        <section id="about" class="about">
+            <div class="container">
+                <h2>About Rajambal Cottons</h2>
+                <div class="about-content">
+                    <div class="about-image">
+                        <img src="images/Saree.jpg" alt="Sarees">
+                    </div>
+                    <div class="about-text">
+                        <p>Rajambal Cottons has been a trusted name in premium cotton saree products for over 15 years. Our commitment to quality and sustainability sets us apart in the textile industry.</p>
+                        <p>We source the finest cotton and use eco-friendly production methods to create comfortable, durable, and stylish clothing for our customers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <div class="contact-content">
+                    <form id="contactForm">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                        <input type="email" name="email" placeholder="Your Email" required>
+                        <input type="tel" name="mobile" placeholder="Your Mobile Number" required>
+                        <input type="text" name="subject" placeholder="Subject" required>
+                        <textarea name="message" placeholder="Your Message" required></textarea>
+                        <button type="submit" class="btn btn-primary" disabled>Send Message</button>
+                    </form>
+                    <div id="formMessage" style="display: none;"></div>
+                    <div class="map-container" data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.0647748982713!2d79.70246931482038!3d12.835543990947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52c1df7e7c2c6d%3A0x5c0d8d688e5aea9f!2s37%2C%20Mettu%20St%2C%20Ennaikkaran%2C%20Kanchipuram%2C%20Tamil%20Nadu%20631501%2C%20India!5e0!3m2!1sen!2sus!4v1623344120978!5m2!1sen!2sus">
+                    <img src="images/map-placeholder.jpg" alt="Map Placeholder">
+                    <button class="load-map-button">Load Map</button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <!-- Footer content here -->
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#products">Products</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Connect With Us</h3>
+                    <div class="social-icons">
+                        <a href="#" target="_blank">Facebook</a>
+                        <a href="#" target="_blank">Instagram</a>
+                        <a href="#" target="_blank">Twitter</a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p>37, Mettu Street, Kanchipuram</p>
+                    <p>Email: <a href="mailto:Prabhu.Vajjiram@yahoo.com">Vajjiram</a></p>
+                    <p>Phone: +91-44-67259797, +91-9443369336</p>
+                    <p>Fax: +91-44-27233699</p>
+                </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 Rajambal Cottons. All rights reserved. | Designed by Prabu Vajjiram | <a href="login.php" class="admin-link">Admin</a></p>
+                <p>&copy; 2024 Rajambal Cottons. All rights reserved. | Designed by Prabu Vajjiram</p>
+                <a href="login.php" class="admin-link">Admin</a>
             </div>
         </div>
     </footer>
+
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="enlargedImage">
+        <div id="imageCaption"></div>
+    </div>
 
     <script src="js/main_updated.js"></script>
 </body>

@@ -1,11 +1,16 @@
 <?php
 session_start();
+require_once 'db_config.php';
 
 // Check if the user is logged in, if not redirect to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
+
+// Fetch existing products
+$sql = "SELECT * FROM products ORDER BY created_at DESC";
+$result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -18,7 +23,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         .admin-container {
-            max-width: 600px;
+            max-width: 800px;
             margin: 100px auto;
             padding: 20px;
             background-color: #f9f9f9;
@@ -46,6 +51,41 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             margin-top: 15px;
             font-weight: bold;
         }
+        .product-list {
+            margin-top: 30px;
+        }
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .product-item:last-child {
+            border-bottom: none;
+        }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #ff3333;
+        }
+        .admin-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -61,15 +101,40 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
     <main>
         <section class="admin-container">
-            <h2>Add New Product</h2>
-            <form id="productForm" enctype="multipart/form-data">
-                <input type="text" name="title" placeholder="Product Title" required>
-                <input type="number" name="price" placeholder="Price" required>
-                <textarea name="description" placeholder="Product Description" required></textarea>
-                <input type="file" name="image" accept="image/*" required>
-                <button type="submit" class="btn btn-primary">Add Product</button>
-            </form>
-            <div id="uploadMessage"></div>
+            <div class="admin-buttons">
+                <button id="addProductBtn" class="btn btn-primary">Add Product</button>
+                <button id="listProductsBtn" class="btn btn-primary">List Products</button>
+            </div>
+
+            <div id="addProductSection" class="admin-section">
+                <h2>Add New Product</h2>
+                <form id="productForm" enctype="multipart/form-data">
+                    <input type="text" name="title" placeholder="Product Title" required>
+                    <input type="number" name="price" placeholder="Price" step="0.01" required>
+                    <textarea name="description" placeholder="Product Description" required></textarea>
+                    <input type="file" name="image" accept="image/*" required>
+                    <button type="submit" class="btn btn-primary">Add Product</button>
+                </form>
+                <div id="uploadMessage"></div>
+            </div>
+
+            <div id="listProductsSection" class="admin-section">
+                <h2>Product List</h2>
+                <div class="product-list">
+                    <?php
+                    if ($result->num_rows > 0) {
+                        while($row = $result->fetch_assoc()) {
+                            echo "<div class='product-item' data-id='" . $row['id'] . "'>";
+                            echo "<span>" . htmlspecialchars($row['title']) . " - ₹" . number_format($row['price'], 2) . htmlspecialchars($row['image_path']) . "</span>";
+                            echo "<button class='delete-btn' data-id='" . $row['id'] . "'>Delete</button>";
+                            echo "</div>";
+                        }
+                    } else {
+                        echo "<p>No products found.</p>";
+                    }
+                    ?>
+                </div>
+            </div>
         </section>
     </main>
 
@@ -84,3 +149,6 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     <script src="js/admin.js"></script>
 </body>
 </html>
+<?php
+$conn->close();
+?>
