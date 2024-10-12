@@ -1,8 +1,6 @@
 let products = [];
 let currentProductCount = 0;
 let cart = [];
-
-// Modal elements
 let modal, modalImg, captionText;
 
 function openModal(img) {
@@ -11,7 +9,6 @@ function openModal(img) {
     captionText.innerHTML = img.alt;
 }
 
-// Lazy load function
 const lazyLoad = (selector, onIntersection) => {
     const elements = document.querySelectorAll(selector);
     if (elements.length === 0) return;
@@ -35,52 +32,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const productGrid = document.querySelector('.product-grid');
     const contactForm = document.getElementById('contactForm');
     const moreProductsButton = document.querySelector('.more-products-button a');
-
-    // Cart elements
     const cartToggle = document.querySelector('.cart-toggle');
     const cartMenu = document.querySelector('.cart-menu');
     const closeCart = document.querySelector('.close-cart');
-
-  // Map elements
     const mapContainer = document.querySelector('.map-container');
     const loadMapButton = mapContainer ? mapContainer.querySelector('.load-map-button') : null;
 
-    // Initialize modal elements
     modal = document.getElementById('imageModal');
     modalImg = document.getElementById('enlargedImage');
     captionText = document.getElementById('imageCaption');
     const closeBtn = document.getElementsByClassName('close')[0];
 
-    // Scroll behavior
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
+        header.classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // Initialize map
     if (mapContainer && loadMapButton) {
-        loadMapButton.addEventListener('click', () => {
-            const iframe = document.createElement('iframe');
-            iframe.setAttribute('src', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.0647748982713!2d79.70246931482038!3d12.835543990947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52c1df7e7c2c6d%3A0x5c0d8d688e5aea9f!2s37%2C%20Mettu%20St%2C%20Ennaikkaran%2C%20Kanchipuram%2C%20Tamil%20Nadu%20631501%2C%20India!5e0!3m2!1sen!2sus!4v1623344120978!5m2!1sen!2sus');
-            iframe.setAttribute('width', '100%');
-            iframe.setAttribute('height', '300');
-            iframe.setAttribute('style', 'border:0;');
-            iframe.setAttribute('allowfullscreen', '');
-            iframe.setAttribute('loading', 'lazy');
-            
-            // Clear the existing content and append the iframe
-            mapContainer.innerHTML = '';
-            mapContainer.appendChild(iframe);
-            
-            // Hide the button after loading the map
-            loadMapButton.style.display = 'none';
-        });
+        loadMapButton.addEventListener('click', () => initializeMap(mapContainer));
     }
 
-    // Mobile menu toggle
     if (menuToggle) {
         menuToggle.addEventListener('click', (e) => {
             e.preventDefault();
@@ -89,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Close mobile menu when a nav item is clicked
     mainNav.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
             document.body.classList.remove('menu-open');
@@ -97,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Close mobile menu when clicking outside
     document.addEventListener('click', (event) => {
         if (!header.contains(event.target) && mainNav.classList.contains('active')) {
             document.body.classList.remove('menu-open');
@@ -105,21 +73,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Modal close button
     if (closeBtn) {
-        closeBtn.onclick = function() {
-            modal.style.display = "none";
-        }
+        closeBtn.onclick = () => modal.style.display = "none";
     }
 
-    // Close modal when clicking outside
-    window.onclick = function(event) {
+    window.onclick = (event) => {
         if (event.target == modal) {
             modal.style.display = "none";
         }
-    }
+    };
 
-    // Cart toggle
     if (cartToggle) {
         cartToggle.addEventListener('click', (e) => {
             e.preventDefault();
@@ -133,29 +96,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Close cart when clicking outside
     document.addEventListener('click', (event) => {
         if (cartMenu && cartToggle && !cartMenu.contains(event.target) && !cartToggle.contains(event.target)) {
             cartMenu.classList.remove('active');
         }
     });
 
-    // Load products
     if (productGrid) {
         loadProducts(productGrid);
     }
 
-    // Handle contact form submission
     if (contactForm) {
         contactForm.addEventListener('submit', handleFormSubmit);
     }
 
-    // Load more products
     if (moreProductsButton) {
         moreProductsButton.addEventListener('click', loadMoreProducts);
     }
 
-    // Add smooth scrolling to all links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -163,12 +121,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Initialize cart UI
     updateCartUI();
 
-    // Lazy load YouTube video and Google Maps
     lazyLoad('.video-container', initializeVideo);
-    lazyLoad('#map-container', initializeMap);
+    lazyLoad('.map-container', initializeMap);
+
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+        cart = JSON.parse(savedCart);
+        updateCartUI();
+    }
 });
 
 function initializeVideo(videoContainer) {
@@ -177,57 +139,100 @@ function initializeVideo(videoContainer) {
 
     playButton.addEventListener('click', () => {
         const iframe = document.createElement('iframe');
-        iframe.setAttribute('width', '100%');
-        iframe.setAttribute('height', '100%');
-        iframe.setAttribute('src', `${videoContainer.dataset.src}?autoplay=1`);
-        iframe.setAttribute('frameborder', '0');
-        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
-        iframe.setAttribute('allowfullscreen', '');
+        iframe.width = '100%';
+        iframe.height = '100%';
+        iframe.src = `${videoContainer.dataset.src}?autoplay=1`;
+        iframe.frameBorder = '0';
+        iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+        iframe.allowFullscreen = true;
         videoContainer.innerHTML = '';
         videoContainer.appendChild(iframe);
     });
 }
 
-/*function initializeMap(mapContainer) {
+function initializeMap(mapContainer) {
     const loadMapButton = mapContainer.querySelector('.load-map-button');
     if (!loadMapButton) return;
 
-    loadMapButton.addEventListener('click', () => {
-        const iframe = document.createElement('iframe');
-        iframe.setAttribute('src', 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.0647748982713!2d79.70246931482038!3d12.835543990947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52c1df7e7c2c6d%3A0x5c0d8d688e5aea9f!2s37%2C%20Mettu%20St%2C%20Ennaikkaran%2C%20Kanchipuram%2C%20Tamil%20Nadu%20631501%2C%20India!5e0!3m2!1sen!2sus!4v1623344120978!5m2!1sen!2sus');
-        iframe.setAttribute('width', '100%');
-        iframe.setAttribute('height', '300');
-        iframe.setAttribute('style', 'border:0;');
-        iframe.setAttribute('allowfullscreen', '');
-        iframe.setAttribute('loading', 'lazy');
-          // Clear the existing content and append the iframe
-        mapContainer.innerHTML = '';
-        mapContainer.appendChild(iframe);
-        
-        // Hide the button after loading the map
-        loadMapButton.style.display = 'none';
-    });
+    const iframe = document.createElement('iframe');
+    iframe.src = mapContainer.dataset.src;
+    iframe.width = '100%';
+    iframe.height = '300';
+    iframe.style.border = '0';
+    iframe.allowFullscreen = true;
+    iframe.loading = 'lazy';
+    mapContainer.innerHTML = '';
+    mapContainer.appendChild(iframe);
+    loadMapButton.style.display = 'none';
 }
-*/
-async function loadProductsFromServer() {
+async function loadProductsFromServer(page = 1) {
     try {
-        const response = await fetch('get_products.php');
+       // console.log('Attempting to fetch products from server...');
+        const response = await fetch(`get_products.php?page=${page}`);
+       // console.log('Server response received:', response);
+        
         if (!response.ok) {
-            throw new Error('Failed to fetch products');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        return await response.json();
+        
+        const rawText = await response.text();
+       // console.log('Raw response text:', rawText);
+        
+        let data;
+        try {
+            data = JSON.parse(rawText);
+        } catch (parseError) {
+            console.error('JSON parse error:', parseError);
+            console.log('Problematic JSON string:', rawText);
+            throw parseError;
+        }
+        
+        //console.log('Parsed data:', data);
+        
+        if (data.debug_output) {
+            console.log('PHP Debug Output:', data.debug_output);
+        }
+        
+        if (data.status === 'error') {
+            throw new Error(data.message);
+        }
+        
+        if (!data.products || !Array.isArray(data.products)) {
+            console.error('Invalid products data:', data);
+            throw new Error('Invalid products data received from server');
+        }
+        
+        return data;
     } catch (error) {
         console.error('Error loading products:', error);
-        return [];
+        return { products: [], pagination: {} };
     }
 }
 
+
+
 async function loadProducts(container, start = 0, limit = 3) {
+    //console.log('Loading products, start:', start, 'limit:', limit);
     if (products.length === 0) {
-        products = await loadProductsFromServer();
+        const data = await loadProductsFromServer();
+        if (data.status === 'error') {
+            console.error('Error loading products:', data.message);
+            container.innerHTML = `<p>Error loading products: ${data.message}</p>`;
+            return false;
+        }
+        products = data.products || [];
+    }
+
+    //console.log('All products:', products);
+
+    if (!Array.isArray(products) || products.length === 0) {
+        console.error('No products available or products is not an array');
+        container.innerHTML = '<p>No products available at the moment. Please check back later.</p>';
+        return false;
     }
 
     const productsToShow = products.slice(start, start + limit);
+    //console.log('Products to show:', productsToShow);
 
     if (productsToShow.length === 0) {
         if (start === 0) {
@@ -268,7 +273,9 @@ async function loadProducts(container, start = 0, limit = 3) {
         });
     });
 
-    currentProductCount += productsToShow.length;
+    // Update the currentProductCount
+    currentProductCount = start + productsToShow.length;
+
     return products.length > currentProductCount;
 }
 
@@ -310,7 +317,12 @@ function updateCartUI() {
                     <div>${item.title}</div>
                     <div>₹${item.price.toFixed(2)} x ${item.quantity}</div>
                 </div>
-                <button class="cart-item-remove" data-id="${item.id}">Remove</button>
+                <div class="cart-item-actions">
+                    <button class="cart-item-decrease" data-id="${item.id}">-</button>
+                    <span class="cart-item-quantity">${item.quantity}</span>
+                    <button class="cart-item-increase" data-id="${item.id}">+</button>
+                    <button class="cart-item-remove" data-id="${item.id}">Remove</button>
+                </div>
             </div>
         `;
     });
@@ -318,22 +330,45 @@ function updateCartUI() {
     cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
     totalAmount.textContent = `₹${total.toFixed(2)}`;
     
-    // Add event listeners to remove buttons
+    document.querySelectorAll('.cart-item-decrease').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateCartItemQuantity(button.dataset.id, -1);
+        });
+    });
+    
+    document.querySelectorAll('.cart-item-increase').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            updateCartItemQuantity(button.dataset.id, 1);
+        });
+    });
+    
     document.querySelectorAll('.cart-item-remove').forEach(button => {
-        button.addEventListener('click', removeFromCart);
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            removeFromCart(button.dataset.id);
+        });
     });
 }
 
-function removeFromCart(event) {
-    const productId = event.target.dataset.id;
-    const index = cart.findIndex(item => item.id === productId);
-    
-    if (index !== -1) {
-        if (cart[index].quantity > 1) {
-            cart[index].quantity -= 1;
+function updateCartItemQuantity(productId, change) {
+    const item = cart.find(item => item.id === productId);
+    if (item) {
+        item.quantity += change;
+        if (item.quantity < 1) {
+            removeFromCart(productId);
         } else {
-            cart.splice(index, 1);
+            updateCartUI();
+            localStorage.setItem('cart', JSON.stringify(cart));
         }
+    }
+}
+
+function removeFromCart(productId) {
+    const index = cart.findIndex(item => item.id === productId);
+    if (index !== -1) {
+        cart.splice(index, 1);
         updateCartUI();
         localStorage.setItem('cart', JSON.stringify(cart));
     }
@@ -400,12 +435,3 @@ function smoothScroll(target, duration) {
 
     requestAnimationFrame(animation);
 }
-
-// Load cart from localStorage on page load
-document.addEventListener('DOMContentLoaded', () => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-        cart = JSON.parse(savedCart);
-        updateCartUI();
-    }
-});

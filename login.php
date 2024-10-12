@@ -98,7 +98,7 @@ mysqli_close($conn);
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="images/shirt-icon.svg" alt="Rajambal Cottons Logo" class="logo-icon">
+                <img src="images/rc.svg" alt="Rajambal Cottons Logo" class="logo-icon">
                 <span class="logo-text">Rajambal Cottons - Admin Login</span>
             </div>
         </div>

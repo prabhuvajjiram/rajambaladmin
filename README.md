@@ -1,3 +1,5 @@
 # rajambaladmin
-
-[Edit in StackBlitz next generation editor ⚡️](https://stackblitz.com/~/github.com/prabhuvajjiram/rajambaladmin)
+HTML5
+CSS
+PHP 8.2
+MySQL 8.2

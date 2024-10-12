@@ -104,7 +104,11 @@
             <span>Total:</span>
             <span class="total-amount">₹0</span>
         </div>
-        <button class="btn btn-primary checkout-btn">Checkout</button>
+               <!--<button class="btn btn-primary checkout-btn">Checkout</button>-->
+        <div id="checkoutProductCards"></div>
+        <div id="totalPrice"></div>
+        <button id="checkoutButton" class="btn btn-primary">Proceed to Checkout</button>
+    </div>
     </div>
 
     <main>
@@ -122,6 +126,7 @@
                 <div class="product-grid">
                     <!-- Product cards will be dynamically inserted here -->
                 </div>
+                <div class="pagination"></div>
                 <div class="more-products-button">
                     <a href="products.html" class="btn btn-primary">More Products</a>
                 </div>
@@ -219,5 +224,6 @@
     </div>
 
     <script src="js/main_updated.js"></script>
+    <script src="js/checkout.js"></script>
 </body>
 </html>

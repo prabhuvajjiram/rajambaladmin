@@ -3,53 +3,30 @@ header('Content-Type: application/json');
 require_once 'db_config.php';
 
 function resizeImage($sourcePath, $targetPath, $maxWidth, $maxHeight) {
-    list($width, $height, $type) = getimagesize($sourcePath);
-    
-    // Calculate new dimensions
+    list($width, $height) = getimagesize($sourcePath);
     $ratio = min($maxWidth / $width, $maxHeight / $height);
     $newWidth = $width * $ratio;
     $newHeight = $height * $ratio;
     
+    $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
     $newImage = imagecreatetruecolor($newWidth, $newHeight);
-    
-    switch ($type) {
-        case IMAGETYPE_JPEG:
-            $sourceImage = imagecreatefromjpeg($sourcePath);
-            break;
-        case IMAGETYPE_PNG:
-            $sourceImage = imagecreatefrompng($sourcePath);
-            imagealphablending($newImage, false);
-            imagesavealpha($newImage, true);
-            break;
-        case IMAGETYPE_GIF:
-            $sourceImage = imagecreatefromgif($sourcePath);
-            break;
-        default:
-            return false;
-    }
     
     imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
     
-    switch ($type) {
-        case IMAGETYPE_JPEG:
-            imagejpeg($newImage, $targetPath, 90);
-            break;
-        case IMAGETYPE_PNG:
-            imagepng($newImage, $targetPath);
-            break;
-        case IMAGETYPE_GIF:
-            imagegif($newImage, $targetPath);
-            break;
-    }
+    $result = imagejpeg($newImage, $targetPath, 90);
     
     imagedestroy($sourceImage);
     imagedestroy($newImage);
     
-    return true;
+    return $result;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $upload_dir = "images/products/";
+    if (!file_exists($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+    
     $file_extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
     $base_name = pathinfo($_FILES["image"]["name"], PATHINFO_FILENAME);
     $file_name = $base_name . "_" . uniqid() . "." . $file_extension;
@@ -81,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ]
                 ]);
             } else {
-                echo json_encode(["status" => "error", "message" => "Error: " . mysqli_error($conn)]);
+                echo json_encode(["status" => "error", "message" => "Error executing statement: " . mysqli_error($conn)]);
             }
             
             mysqli_stmt_close($stmt);

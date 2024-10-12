@@ -1,16 +1,12 @@
 <?php
 session_start();
-require_once 'db_config.php';
+require_once "db_config.php";
 
-// Check if the user is logged in, if not redirect to login page
+// Check if the user is logged in, if not then redirect to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
-
-// Fetch existing products
-$sql = "SELECT * FROM products ORDER BY created_at DESC";
-$result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
@@ -18,41 +14,42 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rajambal Cottons - Admin Panel</title>
+    <title>Admin Panel - Rajambal Cottons</title>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
         .admin-container {
-            max-width: 800px;
-            margin: 100px auto;
+            max-width: 1200px;
+            margin: 80px auto 0;
             padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .admin-container h2 {
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
-        .admin-container form {
+        .admin-nav {
             display: flex;
-            flex-direction: column;
+            gap: 10px;
         }
-        .admin-container input,
-        .admin-container textarea {
-            margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .admin-nav a, .btn {
+            padding: 10px 15px;
+            background-color: #BE3A8E;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
         }
-        .admin-container button {
-            align-self: flex-start;
-        }
-        #uploadMessage {
-            margin-top: 15px;
-            font-weight: bold;
+        .admin-nav a:hover, .btn:hover {
+            background-color: #9C2D73;
         }
         .product-list {
-            margin-top: 30px;
+            margin-top: 20px;
         }
         .product-item {
             display: flex;
@@ -61,30 +58,55 @@ $result = $conn->query($sql);
             padding: 10px;
             border-bottom: 1px solid #eee;
         }
-        .product-item:last-child {
-            border-bottom: none;
+        .product-actions {
+            display: flex;
+            gap: 10px;
         }
-        .delete-btn {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
+        #addProductForm, #editProductForm {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        #addProductForm input,
+        #addProductForm textarea,
+        #editProductForm input,
+        #editProductForm textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
             cursor: pointer;
         }
-        .delete-btn:hover {
-            background-color: #ff3333;
-        }
-        .admin-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .admin-section {
-            display: none;
-        }
-        .admin-section.active {
-            display: block;
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -92,63 +114,50 @@ $result = $conn->query($sql);
     <header class="header">
         <div class="container">
             <div class="logo">
-                <img src="images/shirt-icon.svg" alt="Rajambal Cottons Logo" class="logo-icon">
-                <span class="logo-text">Rajambal Cottons - Admin</span>
+                <img src="images/rc.svg" alt="Rajambal Cottons Logo" class="logo-icon">
+                <span class="logo-text">Rajambal Cottons - Admin Panel</span>
             </div>
-            <button id="logoutBtn" class="btn btn-secondary">Logout</button>
+            <nav class="admin-nav">
+                <a href="#" id="listProductsBtn">List Products</a>
+                <a href="#" id="addProductBtn">Add Product</a>
+                <a href="logout.php">Logout</a>
+            </nav>
         </div>
     </header>
 
-    <main>
-        <section class="admin-container">
-            <div class="admin-buttons">
-                <button id="addProductBtn" class="btn btn-primary">Add Product</button>
-                <button id="listProductsBtn" class="btn btn-primary">List Products</button>
-            </div>
+    <main class="admin-container">
+        <h1>Welcome to the Admin Panel</h1>
+        
+        <div id="productList" class="product-list"></div>
 
-            <div id="addProductSection" class="admin-section">
-                <h2>Add New Product</h2>
-                <form id="productForm" enctype="multipart/form-data">
-                    <input type="text" name="title" placeholder="Product Title" required>
-                    <input type="number" name="price" placeholder="Price" step="0.01" required>
-                    <textarea name="description" placeholder="Product Description" required></textarea>
-                    <input type="file" name="image" accept="image/*" required>
-                    <button type="submit" class="btn btn-primary">Add Product</button>
+        <div id="addProductForm" style="display: none;">
+            <h2>Add New Product</h2>
+            <form id="newProductForm" enctype="multipart/form-data">
+                <input type="text" name="title" placeholder="Product Title" required>
+                <input type="number" name="price" placeholder="Price" step="0.01" required>
+                <textarea name="description" placeholder="Product Description" required></textarea>
+                <input type="file" name="image" accept="image/*" required>
+                <button type="submit" class="btn">Add Product</button>
+            </form>
+        </div>
+
+        <div id="editProductModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Edit Product</h2>
+                <form id="editProductForm" enctype="multipart/form-data">
+                    <input type="hidden" id="editProductId" name="id">
+                    <input type="text" id="editTitle" name="title" placeholder="Product Title" required>
+                    <input type="number" id="editPrice" name="price" placeholder="Price" step="0.01" required>
+                    <textarea id="editDescription" name="description" placeholder="Product Description" required></textarea>
+                    <img id="currentImage" src="" alt="Current Product Image" style="max-width: 200px;">
+                    <input type="file" id="editImage" name="image" accept="image/*">
+                    <button type="submit" class="btn">Update Product</button>
                 </form>
-                <div id="uploadMessage"></div>
-            </div>
-
-            <div id="listProductsSection" class="admin-section">
-                <h2>Product List</h2>
-                <div class="product-list">
-                    <?php
-                    if ($result->num_rows > 0) {
-                        while($row = $result->fetch_assoc()) {
-                            echo "<div class='product-item' data-id='" . $row['id'] . "'>";
-                            echo "<span>" . htmlspecialchars($row['title']) . " - ₹" . number_format($row['price'], 2) . htmlspecialchars($row['image_path']) . "</span>";
-                            echo "<button class='delete-btn' data-id='" . $row['id'] . "'>Delete</button>";
-                            echo "</div>";
-                        }
-                    } else {
-                        echo "<p>No products found.</p>";
-                    }
-                    ?>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2024 Rajambal Cottons. All rights reserved. | Designed by Prabu Vajjiram</p>
             </div>
         </div>
-    </footer>
+    </main>
 
     <script src="js/admin.js"></script>
 </body>
 </html>
-<?php
-$conn->close();
-?>
