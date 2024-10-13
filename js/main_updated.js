@@ -190,12 +190,12 @@ async function loadProductsFromServer(page = 1) {
             throw parseError;
         }
         
-        if (data.debug_output) {
-            console.log('PHP Debug Output:', data.debug_output);
+        if (data.debug) {
+            console.log('Server Debug Messages:', data.debug);
         }
         
         if (data.status === 'error') {
-            throw new Error(data.message);
+            throw new Error(`${data.message}\nDebug: ${JSON.stringify(data.debug)}`);
         }
         
         if (!data.products || !Array.isArray(data.products)) {
@@ -203,72 +203,81 @@ async function loadProductsFromServer(page = 1) {
             throw new Error('Invalid products data received from server');
         }
         
-        return data;
+        return {
+            products: data.products,
+            debug: data.debug,
+            count: data.count
+        };
     } catch (error) {
         console.error('Error loading products:', error);
-        return { products: [], pagination: {} };
+        throw error; // Re-throw the error to be handled by the calling function
     }
 }
 
 async function loadProducts(container, start = 0, limit = 3) {
-    if (products.length === 0) {
-        const data = await loadProductsFromServer();
-        if (data.status === 'error') {
-            console.error('Error loading products:', data.message);
-            container.innerHTML = `<p>Error loading products: ${data.message}</p>`;
+    try {
+        if (products.length === 0) {
+            const data = await loadProductsFromServer();
+            products = data.products || [];
+
+            if (data.debug) {
+                console.log('Server Debug Messages:', data.debug);
+            }
+        }
+
+        if (!Array.isArray(products) || products.length === 0) {
+            console.error('No products available or products is not an array');
+            container.innerHTML = '<p>No products available at the moment. Please check back later.</p>';
             return false;
         }
-        products = data.products || [];
-    }
 
-    if (!Array.isArray(products) || products.length === 0) {
-        console.error('No products available or products is not an array');
-        container.innerHTML = '<p>No products available at the moment. Please check back later.</p>';
-        return false;
-    }
+        const productsToShow = products.slice(start, start + limit);
 
-    const productsToShow = products.slice(start, start + limit);
-
-    if (productsToShow.length === 0) {
-        if (start === 0) {
-            container.innerHTML = '<p>No products available at the moment. Please check back later.</p>';
+        if (productsToShow.length === 0) {
+            if (start === 0) {
+                container.innerHTML = '<p>No products available at the moment. Please check back later.</p>';
+            }
+            return false;
         }
+
+        const productHTML = productsToShow.map(product => `
+            <div class="product-card">
+                <img src="${product.image_path}" alt="${product.title}" class="product-image" onerror="this.src='images/placeholder.jpg';">
+                <div class="product-info">
+                    <h3>${product.title}</h3>
+                    <p class="price">₹${product.price}</p>
+                    <p class="description">${product.description}</p>
+                    <button class="btn btn-secondary add-to-cart" data-id="${product.id}">Add to Cart</button>
+                </div>
+            </div>
+        `).join('');
+
+        if (start === 0) {
+            container.innerHTML = productHTML;
+        } else {
+            container.insertAdjacentHTML('beforeend', productHTML);
+        }
+
+        container.querySelectorAll('.product-image').forEach(img => {
+            img.addEventListener('click', () => openModal(img));
+        });
+
+        container.querySelectorAll('.add-to-cart').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const productId = e.target.getAttribute('data-id');
+                const product = products.find(p => p.id === productId);
+                addToCart(product);
+            });
+        });
+
+        currentProductCount = start + productsToShow.length;
+
+        return products.length > currentProductCount;
+    } catch (error) {
+        console.error('Error loading products:', error);
+        container.innerHTML = `<p>Error loading products: ${error.message}</p>`;
         return false;
     }
-
-    const productHTML = productsToShow.map(product => `
-        <div class="product-card">
-            <img src="${product.image}" alt="${product.title}" class="product-image" onerror="this.src='images/placeholder.jpg';">
-            <div class="product-info">
-                <h3>${product.title}</h3>
-                <p class="price">₹${product.price}</p>
-                <p class="description">${product.description}</p>
-                <button class="btn btn-secondary add-to-cart" data-id="${product.id}">Add to Cart</button>
-            </div>
-        </div>
-    `).join('');
-
-    if (start === 0) {
-        container.innerHTML = productHTML;
-    } else {
-        container.insertAdjacentHTML('beforeend', productHTML);
-    }
-
-    container.querySelectorAll('.product-image').forEach(img => {
-        img.addEventListener('click', () => openModal(img));
-    });
-
-    container.querySelectorAll('.add-to-cart').forEach(button => {
-        button.addEventListener('click', (e) => {
-            const productId = e.target.getAttribute('data-id');
-            const product = products.find(p => p.id === productId);
-            addToCart(product);
-        });
-    });
-
-    currentProductCount = start + productsToShow.length;
-
-    return products.length > currentProductCount;
 }
 
 function addToCart(product) {

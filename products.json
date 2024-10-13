@@ -1,1 +1,65 @@
-[{"id":1,"title":"Handloom Cotton Saree","price":2999,"images":"product1.jpg","description":"Exquisite handloom cotton saree with traditional motifs, perfect for both casual and formal occasions."},{"id":2,"title":"Organic Cotton Dress Material","price":1799,"images":"product2.jpg","description":"Soft and breathable organic cotton dress material, ideal for creating comfortable and stylish outfits."},{"id":3,"title":"Premium Cotton Dhoti","price":1299,"images":"product3.jpg","description":"Classic cotton dhoti made from high-quality long-staple cotton, ensuring comfort and durability."},{"id":"6704ad7153050","title":"test","price":555,"description":"5443","image":"images\/products\/6704ad7153050_logo_rajambalcottons.png"},{"id":"6704bcb9537cd","title":"Kanchi","price":3000,"description":"kacnhi cotton","image":"images\/products\/6704bcb9537cd_Kora cotton ,Rs-2310.JPG"},{"id":"6704bcb9537cd","title":"Kanchi","price":3000,"description":"kacnhi cotton","image":"images\/products\/6704bcb9537cd_Kora cotton ,Rs-2310.JPG"},{"id":"6705c1b429cda","title":"new arrivals","price":4999,"description":"test","image":"images\/products\/6705c1b429cda_error.png"},{"id":"6705c1b429cda","title":"new arrivals","price":4999,"description":"test","image":"images\/products\/6705c1b429cda_error.png"},{"id":"6705c1b5298f6","title":"new arrivals","price":4999,"description":"test","image":"images\/products\/6705c1b5298f6_error.png"},{"id":"6705c1b5298f6","title":"new arrivals","price":4999,"description":"test","image":"images\/products\/6705c1b5298f6_error.png"},{"id":"6705c1cdf1ba9","title":"rete","price":3434,"description":"werew","image":"images\/products\/6705c1cdf1ba9_hero-bg.jpg"},{"id":"6705c1cdf1ba9","title":"rete","price":3434,"description":"werew","image":"images\/products\/6705c1cdf1ba9_hero-bg.jpg"},{"id":6,"title":"23","price":1233,"description":"123123","image":"images\/products\/Empose_6706e136e59bf.jpg"}]
+[
+  {
+    "id": 1,
+    "title": "Handloom Cotton Saree",
+    "price": 2999,
+    "images": "product1.jpg",
+    "description": "Exquisite handloom cotton saree with traditional motifs, perfect for both casual and formal occasions."
+  },
+  {
+    "id": 2,
+    "title": "Organic Cotton Dress Material",
+    "price": 1799,
+    "images": "product2.jpg",
+    "description": "Soft and breathable organic cotton dress material, ideal for creating comfortable and stylish outfits."
+  },
+  {
+    "id": 3,
+    "title": "Premium Cotton Dhoti",
+    "price": 1299,
+    "images": "product3.jpg",
+    "description": "Classic cotton dhoti made from high-quality long-staple cotton, ensuring comfort and durability."
+  },
+  {
+    "id": "6704ad7153050",
+    "title": "test",
+    "price": 555,
+    "description": "5443",
+    "image": "images/products/6704ad7153050_logo_rajambalcottons.png"
+  },
+  {
+    "id": "6704bcb9537cd",
+    "title": "Kanchi",
+    "price": 3000,
+    "description": "kacnhi cotton",
+    "image": "images/products/6704bcb9537cd_Kora cotton ,Rs-2310.JPG"
+  },
+  {
+    "id": "6705c1b429cda",
+    "title": "new arrivals",
+    "price": 4999,
+    "description": "test",
+    "image": "images/products/6705c1b429cda_error.png"
+  },
+  {
+    "id": "6705c1b5298f6",
+    "title": "new arrivals",
+    "price": 4999,
+    "description": "test",
+    "image": "images/products/6705c1b5298f6_error.png"
+  },
+  {
+    "id": "6705c1cdf1ba9",
+    "title": "rete",
+    "price": 3434,
+    "description": "werew",
+    "image": "images/products/6705c1cdf1ba9_hero-bg.jpg"
+  },
+  {
+    "id": 6,
+    "title": "23",
+    "price": 1233,
+    "description": "123123",
+    "image": "images/products/Empose_6706e136e59bf.jpg"
+  }
+]

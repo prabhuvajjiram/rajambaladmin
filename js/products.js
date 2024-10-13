@@ -1,8 +1,17 @@
 let products = [];
 
 function loadProductsFromServer() {
-    return fetch('products.json')
+    return fetch('get_products.php')
         .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Products loaded:', data.products);
+                return data.products;
+            } else {
+                console.error('Error loading products:', data.message);
+                return [];
+            }
+        })
         .catch(error => {
             console.error('Error loading products:', error);
             return [];
@@ -33,6 +42,14 @@ async function loadProducts(container, start = 0, limit = 3) {
                 <h3>${product.title}</h3>
                 <p class="price">₹${product.price}</p>
                 <p class="description">${product.description}</p>
+                ${product.colors && product.colors.length > 0 ? `
+                    <p class="colors">Colors: ${product.colors.map(color => `
+                        <span class="color-item">
+                            <span class="color-name">${color.name}</span>
+                            <img src="${getImageUrl(color.image)}" alt="${color.name}" class="color-image">
+                        </span>
+                    `).join('')}</p>
+                ` : ''}
                 <a href="#" class="btn btn-secondary">Add to Cart</a>
             </div>
         </div>

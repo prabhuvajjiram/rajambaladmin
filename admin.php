@@ -61,6 +61,20 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             padding: 10px;
             border-bottom: 1px solid #eee;
         }
+        .color-list {
+            display: flex;
+            gap: 10px;
+        }
+        .color-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+        }
+        .color-item img {
+            border: 1px solid #ccc;
+            border-radius: 50%;
+        }
         .product-actions {
             display: flex;
             gap: 10px;
@@ -207,9 +221,22 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                 <input type="number" name="price" placeholder="Price" step="0.01" required>
                 <textarea name="description" placeholder="Product Description" required></textarea>
                 <input type="file" name="image" accept="image/*" required>
+                <h3>Product Colors</h3>
+                <div id="colorInputs">
+                    <div class="color-input">
+                        <input type="text" name="colors[0][name]" placeholder="Color Name">
+                        <input type="file" name="colors[0][image]" accept="image/*">
+                    </div>
+                </div>
+                <button type="button" onclick="addColorInput()">Add Another Color</button>
                 <button type="submit" class="btn">Add Product</button>
             </form>
         </div>
+        <script>
+            document.getElementById('addProductBtn').addEventListener('click', function() {
+                document.getElementById('addProductForm').style.display = 'block';
+            });
+        </script>
 
         <div id="editProductModal" class="modal">
             <div class="modal-content">
@@ -228,6 +255,137 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         </div>
     </main>
 
-    <script src="js/admin.js"></script>
+    <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                fetchProducts();
+            });
+
+            function fetchProducts() {
+                console.log('Fetching products...');
+                fetch('get_products.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Received data:', data);
+                        if (data.status === 'success') {
+                            console.log('Products:', data.products);
+                            data.products.forEach(product => {
+                                console.log('Product colors:', product.colors);
+                            });
+                            displayProducts(data.products);
+                        } else {
+                            console.error('Error fetching products:', data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            function displayProducts(products) {
+                console.log('Displaying products:', products);
+                const productList = document.getElementById('productList');
+                productList.innerHTML = '';
+                products.forEach(product => {
+                    console.log('Processing product:', product);
+                    const productItem = document.createElement('div');
+                    productItem.className = 'product-item';
+                    
+                    let colorHtml = '';
+                    if (product.colors && product.colors.length > 0) {
+                        console.log('Product colors:', product.colors);
+                        colorHtml = '<div class="color-list">';
+                        product.colors.forEach(color => {
+                            console.log('Processing color:', color);
+                            colorHtml += `
+                                <div class="color-item">
+                                    <img src="${color.path}" alt="${color.name}" title="${color.name}" style="width: 30px; height: 30px;" onerror="this.onerror=null; this.src='images/placeholder.png';">
+                                    <span>${color.name}</span>
+                                </div>
+                            `;
+                        });
+                        colorHtml += '</div>';
+                    } else {
+                        console.log('No colors for this product');
+                        colorHtml = '<div>No colors available</div>';
+                    }
+                    console.log('Final color HTML:', colorHtml);
+                    
+                    productItem.innerHTML = `
+                        <img src="${product.image_path}" alt="${product.title}" style="width: 50px; height: 50px;">
+                        <span>${product.title}</span>
+                        <span>₹${product.price}</span>
+                        <div class="product-colors">
+                            <h4>Colors:</h4>
+                            ${colorHtml}
+                        </div>
+                        <div class="product-actions">
+                            <button onclick="editProduct(${product.id})">Edit</button>
+                            <button onclick="deleteProduct(${product.id})">Delete</button>
+                        </div>
+                    `;
+                    productList.appendChild(productItem);
+                });
+            }
+
+            function addColorInput() {
+                console.log('Adding new color input');
+                const colorInputs = document.getElementById('colorInputs');
+                const newColorInput = document.createElement('div');
+                newColorInput.className = 'color-input';
+                const colorIndex = colorInputs.children.length;
+                newColorInput.innerHTML = `
+                    <input type="text" name="colors[${colorIndex}][name]" placeholder="Color Name">
+                    <input type="file" name="colors[${colorIndex}][image]" accept="image/*">
+                `;
+                colorInputs.appendChild(newColorInput);
+                console.log('New color input added. Total color inputs:', colorInputs.children.length);
+            }
+
+            document.getElementById('newProductForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+                
+                console.log('Submitting new product form');
+                const colorInputs = document.querySelectorAll('.color-input');
+                colorInputs.forEach((colorInput, index) => {
+                    const colorName = colorInput.querySelector('input[type="text"]').value;
+                    const colorImage = colorInput.querySelector('input[type="file"]').files[0];
+                    if (colorName && colorImage) {
+                        formData.append(`colors[${index}][name]`, colorName);
+                        formData.append(`colors[${index}][image]`, colorImage);
+                    }
+                });
+
+                for (let [key, value] of formData.entries()) {
+                    console.log(key, value);
+                }
+                
+                fetch('upload_product.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Server response:', data);
+                    if (data.success) {
+                        alert('Product added successfully');
+                        fetchProducts();
+                        this.reset();
+                        document.getElementById('colorInputs').innerHTML = `
+                            <div class="color-input">
+                                <input type="text" name="colors[0][name]" placeholder="Color Name">
+                                <input type="file" name="colors[0][image]" accept="image/*">
+                            </div>
+                        `;
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while adding the product');
+                });
+            });
+
+            // ... (rest of the admin.js code)
+        </script>
 </body>
 </html>
