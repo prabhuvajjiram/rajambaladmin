@@ -131,6 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
         cart = JSON.parse(savedCart);
         updateCartUI();
     }
+
+    const checkoutButton = document.getElementById('checkoutButton');
+    if (checkoutButton) {
+        checkoutButton.addEventListener('click', handleCheckout);
+    }
 });
 
 function initializeVideo(videoContainer) {
@@ -165,18 +170,16 @@ function initializeMap(mapContainer) {
     mapContainer.appendChild(iframe);
     loadMapButton.style.display = 'none';
 }
+
 async function loadProductsFromServer(page = 1) {
     try {
-       // console.log('Attempting to fetch products from server...');
         const response = await fetch(`get_products.php?page=${page}`);
-       // console.log('Server response received:', response);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const rawText = await response.text();
-       // console.log('Raw response text:', rawText);
         
         let data;
         try {
@@ -186,8 +189,6 @@ async function loadProductsFromServer(page = 1) {
             console.log('Problematic JSON string:', rawText);
             throw parseError;
         }
-        
-        //console.log('Parsed data:', data);
         
         if (data.debug_output) {
             console.log('PHP Debug Output:', data.debug_output);
@@ -209,10 +210,7 @@ async function loadProductsFromServer(page = 1) {
     }
 }
 
-
-
 async function loadProducts(container, start = 0, limit = 3) {
-    //console.log('Loading products, start:', start, 'limit:', limit);
     if (products.length === 0) {
         const data = await loadProductsFromServer();
         if (data.status === 'error') {
@@ -223,8 +221,6 @@ async function loadProducts(container, start = 0, limit = 3) {
         products = data.products || [];
     }
 
-    //console.log('All products:', products);
-
     if (!Array.isArray(products) || products.length === 0) {
         console.error('No products available or products is not an array');
         container.innerHTML = '<p>No products available at the moment. Please check back later.</p>';
@@ -232,7 +228,6 @@ async function loadProducts(container, start = 0, limit = 3) {
     }
 
     const productsToShow = products.slice(start, start + limit);
-    //console.log('Products to show:', productsToShow);
 
     if (productsToShow.length === 0) {
         if (start === 0) {
@@ -259,12 +254,10 @@ async function loadProducts(container, start = 0, limit = 3) {
         container.insertAdjacentHTML('beforeend', productHTML);
     }
 
-    // Add click event listeners to the newly added images
     container.querySelectorAll('.product-image').forEach(img => {
         img.addEventListener('click', () => openModal(img));
     });
 
-    // Add click event listeners to the "Add to Cart" buttons
     container.querySelectorAll('.add-to-cart').forEach(button => {
         button.addEventListener('click', (e) => {
             const productId = e.target.getAttribute('data-id');
@@ -273,7 +266,6 @@ async function loadProducts(container, start = 0, limit = 3) {
         });
     });
 
-    // Update the currentProductCount
     currentProductCount = start + productsToShow.length;
 
     return products.length > currentProductCount;
@@ -301,8 +293,9 @@ function updateCartUI() {
     const cartItems = document.querySelector('.cart-items');
     const cartCount = document.querySelector('.cart-count');
     const totalAmount = document.querySelector('.total-amount');
+    const checkoutButton = document.getElementById('checkoutButton');
     
-    if (!cartItems || !cartCount || !totalAmount) return;
+    if (!cartItems || !cartCount || !totalAmount || !checkoutButton) return;
 
     cartItems.innerHTML = '';
     let total = 0;
@@ -329,6 +322,15 @@ function updateCartUI() {
     
     cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
     totalAmount.textContent = `₹${total.toFixed(2)}`;
+    
+    // Update checkout button state
+    if (cart.length === 0) {
+        checkoutButton.disabled = true;
+        checkoutButton.textContent = 'Cart is Empty';
+    } else {
+        checkoutButton.disabled = false;
+        checkoutButton.textContent = 'Proceed to Checkout';
+    }
     
     document.querySelectorAll('.cart-item-decrease').forEach(button => {
         button.addEventListener('click', (e) => {
@@ -434,4 +436,13 @@ function smoothScroll(target, duration) {
     }
 
     requestAnimationFrame(animation);
+}
+
+function handleCheckout() {
+    if (cart.length === 0) {
+        alert("Your cart is empty. Add some items before proceeding to checkout.");
+    } else {
+        // Proceed to checkout page
+        window.location.href = 'checkout.php';
+    }
 }
