@@ -2,13 +2,11 @@
 session_start();
 require_once "db_config.php";
 
-// Check if the user is logged in, if not then redirect to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,6 +17,11 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
         .admin-container {
             max-width: 1200px;
             margin: 80px auto 0;
@@ -108,6 +111,72 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             text-decoration: none;
             cursor: pointer;
         }
+        .header {
+            background-color: #f1f1f1;
+            padding: 20px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        .logo-icon {
+            height: 40px;
+            margin-right: 10px;
+        }
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .menu-icon {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        @media screen and (max-width: 768px) {
+            .admin-container {
+                margin: 60px auto 0;
+                padding: 10px;
+            }
+            .header .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .logo {
+                margin-bottom: 10px;
+            }
+            .menu-icon {
+                display: block;
+                position: absolute;
+                right: 20px;
+                top: 20px;
+            }
+            .admin-nav {
+                display: none;
+                width: 100%;
+            }
+            .admin-nav.show {
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .admin-nav a, .btn {
+                width: 100%;
+                text-align: center;
+            }
+            #addProductBtn {
+                display: block;
+                margin-top: 20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -115,12 +184,13 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         <div class="container">
             <div class="logo">
                 <img src="images/rc.svg" alt="Rajambal Cottons Logo" class="logo-icon">
-                <span class="logo-text">Rajambal Cottons - Admin Panel</span>
+                <span class="logo-text">Rajambal Cottons - Admin Panel
             </div>
-            <nav class="admin-nav">
+            <div class="menu-icon" onclick="toggleMenu()">☰</div>
+            <nav class="admin-nav" id="adminNav">
                 <a href="#" id="listProductsBtn">List Products</a>
                 <a href="#" id="addProductBtn">Add Product</a>
-                <a href="logout.php">Logout</a>
+                <a href="#" onclick="logout(); return false;">Logout</a>
             </nav>
         </div>
     </header>
@@ -143,7 +213,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
 
         <div id="editProductModal" class="modal">
             <div class="modal-content">
-                <span class="close">&times;</span>
+                <span class="close">&times;
                 <h2>Edit Product</h2>
                 <form id="editProductForm" enctype="multipart/form-data">
                     <input type="hidden" id="editProductId" name="id">

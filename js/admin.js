@@ -103,8 +103,8 @@ function addProduct(formData) {
     });
 }
 
-function editProduct(productId) {
-    fetch(`get_product.php?id=${productId}`)
+function editProduct(id) {
+    fetch(`get_product.php?id=${id}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -112,35 +112,24 @@ function editProduct(productId) {
             return response.json();
         })
         .then(data => {
-            if (data.status === 'success' && data.product) {
-                const product = data.product;
-                document.getElementById('editProductId').value = product.id;
-                document.getElementById('editTitle').value = product.title;
-                document.getElementById('editPrice').value = product.price;
-                document.getElementById('editDescription').value = product.description;
+            if (data.status === 'success') {
+                document.getElementById('editProductId').value = data.product.id;
+                document.getElementById('editTitle').value = data.product.title;
+                document.getElementById('editPrice').value = data.product.price;
+                document.getElementById('editDescription').value = data.product.description;
+                document.getElementById('currentImage').src = data.product.image;
                 
-                // Update the current image display
-                const currentImage = document.getElementById('currentImage');
-                if (product.image) {
-                    currentImage.src = product.image;
-                    currentImage.style.display = 'block';
-                } else {
-                    currentImage.style.display = 'none';
-                }
-                
-                // Show the edit product modal
-                const editProductModal = document.getElementById('editProductModal');
-                editProductModal.style.display = 'block';
+                document.getElementById('editProductModal').style.display = 'block';
             } else {
-                throw new Error(data.message || 'Failed to fetch product details');
+                console.error('Error fetching product:', data.message);
+                alert('Error fetching product details. Please try again.');
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error fetching product details: ' + error.message);
+            alert('An error occurred. Please try again.');
         });
 }
-
 
 function updateProduct(formData) {
     fetch('edit_product.php', {
@@ -163,6 +152,59 @@ function updateProduct(formData) {
     });
 }
 
+function logout() {
+    // Send a request to logout.php
+    fetch('logout.php', {
+        method: 'POST',
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (response.ok) {
+            // Redirect to the home page after successful logout
+            window.location.href = 'https://www.rajambalcottons.com/';
+        } else {
+            console.error('Logout failed');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function toggleMenu() {
+    var nav = document.getElementById("adminNav");
+    var menuIcon = document.querySelector(".menu-icon");
+    nav.classList.toggle("show");
+    
+    // Change the menu icon to an 'X' when opened, and back to '☰' when closed
+    if (nav.classList.contains("show")) {
+        menuIcon.innerHTML = "✕";
+    } else {
+        menuIcon.innerHTML = "☰";
+    }
+}
+// Close the menu when clicking outside of it
+function toggleMenu() {
+    var nav = document.getElementById("adminNav");
+    var menuIcon = document.querySelector(".menu-icon");
+    nav.classList.toggle("show");
+    
+    if (nav.classList.contains("show")) {
+        menuIcon.innerHTML = "✕";
+    } else {
+        menuIcon.innerHTML = "☰";
+    }
+}
+
+// Close the menu when a menu item is clicked
+document.querySelectorAll('#adminNav a').forEach(item => {
+    item.addEventListener('click', function() {
+        var nav = document.getElementById("adminNav");
+        var menuIcon = document.querySelector(".menu-icon");
+        nav.classList.remove("show");
+        menuIcon.innerHTML = "☰";
+    });
+});
 function deleteProduct(productId) {
     if (confirm('Are you sure you want to delete this product?')) {
         fetch('delete_product.php', {

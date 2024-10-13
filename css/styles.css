@@ -128,6 +128,7 @@ body {
 @media screen and (max-width: 768px) {
     .menu-toggle {
         display: block;
+        
     }
 
     nav {
@@ -160,6 +161,56 @@ body {
     .header .container {
         justify-content: space-between;
     }
+
+    .admin-container {
+        margin: 60px auto 0;
+        padding: 10px;
+    }
+    .header .container {
+        position: relative;
+        padding-top: 60px; /* Make room for the absolute positioned menu icon */
+    }
+    .logo {
+        margin-bottom: 10px;
+    }
+    .menu-icon {
+        display: block;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+    .admin-nav {
+        display: none;
+        position: absolute;
+        top: 100%; /* Position it right below the header */
+        left: 0;
+        width: 100%;
+        background-color: #f1f1f1;
+        z-index: 1000;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .admin-nav.show {
+        display: block;
+    }
+    .admin-nav a {
+        display: block;
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+        color: #333;
+        text-decoration: none;
+    }
+    .admin-nav a:last-child {
+        border-bottom: none;
+    }
+    .admin-nav a:hover {
+        background-color: #e0e0e0;
+    }
+
+
 }
 
 /* Hero section styles */
@@ -777,3 +828,4 @@ body {
     font-weight: bold;
     margin-bottom: 20px;
 }
+
