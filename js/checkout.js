@@ -110,3 +110,50 @@ function setupCompleteCheckoutButton() {
 window.setupCheckoutButton = setupCheckoutButton;
 window.displayCheckoutProducts = displayCheckoutProducts;
 window.setupCompleteCheckoutButton = setupCompleteCheckoutButton;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const checkoutProductCards = document.getElementById('checkoutProductCards');
+    const totalPriceElement = document.getElementById('totalPrice');
+    const checkoutButton = document.getElementById('checkoutButton');
+
+    function loadCartFromLocalStorage() {
+        const savedCart = localStorage.getItem('cart');
+        return savedCart ? JSON.parse(savedCart) : [];
+    }
+
+    function displayCheckoutItems() {
+        const cart = loadCartFromLocalStorage();
+        let totalPrice = 0;
+
+        checkoutProductCards.innerHTML = '';
+
+        cart.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'checkout-item';
+            itemElement.innerHTML = `
+                <img src="${item.image}" alt="${item.title}" class="checkout-item-image">
+                <div class="checkout-item-details">
+                    <h3>${item.title}</h3>
+                    <p>Color: ${item.color}</p>
+                    <p>Quantity: ${item.quantity}</p>
+                    <p>Price: ₹${(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+            `;
+            checkoutProductCards.appendChild(itemElement);
+
+            totalPrice += item.price * item.quantity;
+        });
+
+        totalPriceElement.textContent = `Total: ₹${totalPrice.toFixed(2)}`;
+    }
+
+    displayCheckoutItems();
+
+    checkoutButton.addEventListener('click', function() {
+        // Here you would typically handle the checkout process
+        // For now, we'll just clear the cart and show a message
+        localStorage.removeItem('cart');
+        alert('Thank you for your purchase! Our website is currently under construction. To complete your purchase, please call our store.');
+        window.location.href = 'index.html'; // Redirect to home page after purchase
+    });
+});

@@ -1,54 +1,97 @@
 <?php
-error_reporting(E_ALL);
+error_reporting(0);
 ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 require_once 'db_config.php';
 
-$debug_messages = [];
-$error_messages = [];
-$response = ['success' => false, 'message' => '', 'debug' => [], 'errors' => []];
+$response = ['success' => false, 'message' => '', 'product' => null];
 
-function logDebug($message) {
-    global $debug_messages;
-    $debug_messages[] = date('[Y-m-d H:i:s] ') . $message;
-}
+function processAndResizeImage($sourcePath, $targetPath, $maxWidth, $maxHeight, $quality = 90) {
+    list($width, $height, $imageType) = getimagesize($sourcePath);
 
-function logError($message) {
-    global $error_messages;
-    $error_messages[] = $message;
-}
+    switch ($imageType) {
+        case IMAGETYPE_JPEG:
+            $sourceImage = imagecreatefromjpeg($sourcePath);
+            break;
+        case IMAGETYPE_PNG:
+            $sourceImage = imagecreatefrompng($sourcePath);
+            break;
+        case IMAGETYPE_GIF:
+            $sourceImage = imagecreatefromgif($sourcePath);
+            break;
+        default:
+            throw new Exception("Unsupported image type.");
+    }
 
-function customErrorHandler($errno, $errstr, $errfile, $errline) {
-    logDebug("PHP Error [$errno]: $errstr in $errfile on line $errline");
-    logError("PHP Error [$errno]: $errstr in $errfile on line $errline");
-}
+    // Check for EXIF orientation and rotate if necessary
+    if (function_exists('exif_read_data') && $imageType == IMAGETYPE_JPEG) {
+        $exif = @exif_read_data($sourcePath);
+        if (!empty($exif['Orientation'])) {
+            switch ($exif['Orientation']) {
+                case 3:
+                    $sourceImage = imagerotate($sourceImage, 180, 0);
+                    break;
+                case 6:
+                    $sourceImage = imagerotate($sourceImage, -90, 0);
+                    list($width, $height) = [$height, $width];
+                    break;
+                case 8:
+                    $sourceImage = imagerotate($sourceImage, 90, 0);
+                    list($width, $height) = [$height, $width];
+                    break;
+            }
+        }
+    }
 
-set_error_handler("customErrorHandler");
+    $aspectRatio = $width / $height;
+    if ($width > $maxWidth || $height > $maxHeight) {
+        if ($maxWidth / $maxHeight > $aspectRatio) {
+            $newWidth = $maxHeight * $aspectRatio;
+            $newHeight = $maxHeight;
+        } else {
+            $newWidth = $maxWidth;
+            $newHeight = $maxWidth / $aspectRatio;
+        }
+    } else {
+        $newWidth = $width;
+        $newHeight = $height;
+    }
 
-function resizeImage($sourcePath, $targetPath, $maxWidth, $maxHeight) {
-    list($width, $height) = getimagesize($sourcePath);
-    $ratio = min($maxWidth / $width, $maxHeight / $height);
-    $newWidth = $width * $ratio;
-    $newHeight = $height * $ratio;
-    
-    $sourceImage = imagecreatefromstring(file_get_contents($sourcePath));
     $newImage = imagecreatetruecolor($newWidth, $newHeight);
-    
+
+    // Preserve transparency for PNG images
+    if ($imageType == IMAGETYPE_PNG) {
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+        $transparent = imagecolorallocatealpha($newImage, 255, 255, 255, 127);
+        imagefilledrectangle($newImage, 0, 0, $newWidth, $newHeight, $transparent);
+    }
+
     imagecopyresampled($newImage, $sourceImage, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-    
-    $result = imagejpeg($newImage, $targetPath, 90);
-    
+
+    switch ($imageType) {
+        case IMAGETYPE_JPEG:
+            imagejpeg($newImage, $targetPath, $quality);
+            break;
+        case IMAGETYPE_PNG:
+            imagepng($newImage, $targetPath, 9);
+            break;
+        case IMAGETYPE_GIF:
+            imagegif($newImage, $targetPath);
+            break;
+    }
+
     imagedestroy($sourceImage);
     imagedestroy($newImage);
-    
-    return $result;
+
+    return true;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     try {
         $upload_dir = "images/products/";
         if (!file_exists($upload_dir)) {
-            if (!mkdir($upload_dir, 0777, true)) {
+            if (!mkdir($upload_dir, 0755, true)) {
                 throw new Exception("Failed to create upload directory.");
             }
         }
@@ -57,15 +100,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             throw new Exception("Error uploading main product image.");
         }
 
-        $file_extension = pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
+        $file_extension = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+        $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif'];
+        if (!in_array($file_extension, $allowed_extensions)) {
+            throw new Exception("Invalid file type. Only JPG, PNG, and GIF are allowed.");
+        }
+
         $base_name = pathinfo($_FILES["image"]["name"], PATHINFO_FILENAME);
         $file_name = $base_name . "_" . uniqid() . "." . $file_extension;
         $target_file = $upload_dir . $file_name;
         
         $temp_file = $_FILES["image"]["tmp_name"];
         
-        if (!resizeImage($temp_file, $target_file, 800, 800)) {
-            throw new Exception("Failed to resize main product image.");
+        if (!processAndResizeImage($temp_file, $target_file, 800, 800)) {
+            throw new Exception("Failed to process and resize main product image.");
         }
 
         $title = mysqli_real_escape_string($conn, $_POST["title"]);
@@ -87,79 +135,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $product_id = mysqli_insert_id($conn);
         $colors_added = [];
         
-        // Handle color uploads
         if (isset($_POST['colors']) && is_array($_POST['colors'])) {
             $color_sql = "INSERT INTO colors (product_id, color_name, color_image_path) VALUES (?, ?, ?)";
             if (!$color_stmt = mysqli_prepare($conn, $color_sql)) {
                 throw new Exception("Error preparing color statement: " . mysqli_error($conn));
             }
 
-            logDebug("Processing " . count($_POST['colors']) . " colors");
-
             foreach ($_POST['colors'] as $key => $color_data) {
-                logDebug("Processing color: " . $key);
-                if (isset($color_data['name']) && isset($_FILES['colors']['name'][$key])) {
+                if (isset($color_data['name']) && isset($_FILES['colors']['name'][$key]['image'])) {
                     $color_name = $color_data['name'];
-                    $color_image = [
-                        'name' => $_FILES['colors']['name'][$key],
-                        'type' => $_FILES['colors']['type'][$key],
-                        'tmp_name' => $_FILES['colors']['tmp_name'][$key],
-                        'error' => $_FILES['colors']['error'][$key],
-                        'size' => $_FILES['colors']['size'][$key]
-                    ];
+                    $color_image = $_FILES['colors']['name'][$key]['image'];
                     
-                    logDebug("Color data: " . json_encode($color_image));
+                    if ($_FILES['colors']['error'][$key]['image'] === UPLOAD_ERR_OK) {
+                        $color_file_extension = strtolower(pathinfo($color_image, PATHINFO_EXTENSION));
+                        if (!in_array($color_file_extension, $allowed_extensions)) {
+                            continue; // Skip invalid file types
+                        }
 
-                    if ($color_image['error'] === UPLOAD_ERR_OK) {
-                        $color_file_extension = pathinfo($color_image["name"], PATHINFO_EXTENSION);
-                        $color_base_name = pathinfo($color_image["name"], PATHINFO_FILENAME);
+                        $color_base_name = pathinfo($color_image, PATHINFO_FILENAME);
                         $color_file_name = $color_base_name . "_" . uniqid() . "." . $color_file_extension;
                         $color_target_file = $upload_dir . $color_file_name;
                         
-                        if (resizeImage($color_image["tmp_name"], $color_target_file, 800, 800)) {
-                            mysqli_stmt_bind_param($color_stmt, "iss", $product_id, $color_name, $color_target_file);
+                        if (processAndResizeImage($_FILES['colors']['tmp_name'][$key]['image'], $color_target_file, 800, 800)) {
+                            $color_image_path = $color_target_file;
+                            mysqli_stmt_bind_param($color_stmt, "iss", $product_id, $color_name, $color_image_path);
                             if (!mysqli_stmt_execute($color_stmt)) {
                                 throw new Exception("Error executing color statement: " . mysqli_error($conn));
                             }
-                            $colors_added[] = ['name' => $color_name, 'image' => $color_target_file];
-                            logDebug("Color added: " . $color_name . " - " . $color_target_file);
-                        } else {
-                            logError("Failed to resize color image: " . $color_image["name"]);
+                            $colors_added[] = ['name' => $color_name, 'image' => $color_image_path];
                         }
-                    } else {
-                        logError("Error uploading color image: " . $color_image['error']);
                     }
-                } else {
-                    logError("Missing color name or file for key: " . $key);
                 }
             }
             
             mysqli_stmt_close($color_stmt);
-            logDebug("Number of colors added: " . count($colors_added));
-        } else {
-            logDebug("No colors to process");
         }
 
         $response = [
-            "status" => "success",
-            "message" => "The product has been uploaded and resized successfully.",
+            "success" => true,
+            "message" => "The product has been uploaded successfully.",
             "product" => [
                 "id" => $product_id,
                 "title" => $title,
                 "price" => $price,
                 "description" => $description,
-                "colors" => $colors_added,
                 "image" => $target_file,
                 "colors" => $colors_added
             ]
         ];
 
     } catch (Exception $e) {
-        logError($e->getMessage());
-        $response = ["status" => "error", "message" => $e->getMessage()];
+        $response = ["success" => false, "message" => $e->getMessage(), "product" => null];
     }
 } else {
-    $response = ["status" => "error", "message" => "Invalid request method."];
+    $response = ["success" => false, "message" => "Invalid request method.", "product" => null];
 }
 
 mysqli_close($conn);
