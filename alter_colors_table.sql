@@ -1,0 +1,5 @@
+ALTER TABLE colors
+ADD CONSTRAINT fk_product_id
+FOREIGN KEY (product_id)
+REFERENCES products(id)
+ON DELETE CASCADE;

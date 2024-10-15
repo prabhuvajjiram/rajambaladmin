@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Rajambal Cottons offers premium quality cotton products including sarees, churidar, and dhotis. Experience comfort and style with our traditional and modern designs.">
     <title>Rajambal Cottons - Premium Cotton Products</title>
+    <link rel="canonical" href="https://www.rajambalcottons.com/index.html" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    
+    <!-- Preload critical assets -->
+    <link rel="preload" href="css/styles.css" as="style">
+    <link rel="preload" href="js/main_updated.js" as="script">
     
     <!-- Inline critical CSS -->
     <style>
@@ -48,20 +56,40 @@
     <!-- Load main CSS -->
     <link rel="stylesheet" href="css/styles.css">
     
-    <!-- Defer Material Icons -->
+    <!-- Defer non-critical CSS -->
     <link rel="preload" href="https://fonts.googleapis.com/icon?family=Material+Icons" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"></noscript>
     
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','G-MQ8HF6R671');</script>
-    <!-- End Google Tag Manager -->
+     <!-- Google Tag Manager -->
+     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','G-MQ8HF6R671');</script>
+        <!-- End Google Tag Manager -->
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ClothingStore",
+      "name": "Rajambal Cottons",
+      "image": "https://www.rajambalcottons.com/images/logo.png",
+      "description": "Premium cotton products including sarees, churidar, and dhotis.",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "37, Mettu Street",
+        "addressLocality": "Kanchipuram",
+        "addressRegion": "Tamil Nadu",
+        "postalCode": "631501",
+        "addressCountry": "IN"
+      },
+      "telephone": "+91-44-67259797",
+      "url": "https://www.rajambalcottons.com"
+    }
+    </script>
 </head>
 <body>
-	<!-- Google Tag Manager (noscript) -->
+    <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=G-MQ8HF6R671"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
@@ -86,7 +114,7 @@
             </nav>
             <button class="cart-toggle" aria-label="Open cart">
                 <span class="material-icons">shopping_cart</span>
-                <span class="cart-count">0</span>
+                <span class="cart-count" id="cartCount">0</span>
             </button>
         </div>
     </header>
@@ -104,11 +132,7 @@
             <span>Total:</span>
             <span class="total-amount">₹0</span>
         </div>
-               <!--<button class="btn btn-primary checkout-btn">Checkout</button>-->
-        <div id="checkoutProductCards"></div>
-        <div id="totalPrice"></div>
-        <button id="checkoutButton" class="btn btn-primary">Proceed to Checkout</button>
-    </div>
+        <a href="checkout.html" id="checkoutButton" class="btn btn-primary">Proceed to Checkout</a>
     </div>
 
     <main>
@@ -126,9 +150,8 @@
                 <div class="product-grid">
                     <!-- Product cards will be dynamically inserted here -->
                 </div>
-                <div class="pagination"></div>
                 <div class="more-products-button">
-                    <a href="products.html" class="btn btn-primary">More Products</a>
+                    <button id="moreProductsBtn" class="btn btn-primary">More Products</button>
                 </div>
             </div>
         </section>
@@ -223,7 +246,7 @@
         <div id="imageCaption"></div>
     </div>
 
-    <script src="js/main_updated.js"></script>
+    <script src="js/main_updated.js" defer></script>
     <script src="js/checkout.js"></script>
 </body>
 </html>

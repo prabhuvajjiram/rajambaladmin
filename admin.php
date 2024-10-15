@@ -61,6 +61,20 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             padding: 10px;
             border-bottom: 1px solid #eee;
         }
+        .color-list {
+            display: flex;
+            gap: 10px;
+        }
+        .color-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+        }
+        .color-item img {
+            border: 1px solid #ccc;
+            border-radius: 50%;
+        }
         .product-actions {
             display: flex;
             gap: 10px;
@@ -184,7 +198,7 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         <div class="container">
             <div class="logo">
                 <img src="images/rc.svg" alt="Rajambal Cottons Logo" class="logo-icon">
-                <span class="logo-text">Rajambal Cottons - Admin Panel
+                <span class="logo-text">Rajambal Cottons - Admin Panel</span>
             </div>
             <div class="menu-icon" onclick="toggleMenu()">☰</div>
             <nav class="admin-nav" id="adminNav">
@@ -207,13 +221,21 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                 <input type="number" name="price" placeholder="Price" step="0.01" required>
                 <textarea name="description" placeholder="Product Description" required></textarea>
                 <input type="file" name="image" accept="image/*" required>
-                <button type="submit" class="btn">Add Product</button>
+                <h3>Product Colors</h3>
+                <div id="colorInputs">
+                    <div class="color-input">
+                        <input type="text" name="colors[0][name]" placeholder="Color Name">
+                        <input type="file" name="colors[0][image]" accept="image/*">
+                    </div>
+                </div>
+                <button type="button" id="addColorBtn">Add Another Color</button>
+                <button type="submit">Add Product</button>
             </form>
         </div>
 
         <div id="editProductModal" class="modal">
             <div class="modal-content">
-                <span class="close">&times;
+                <span class="close">&times;</span>
                 <h2>Edit Product</h2>
                 <form id="editProductForm" enctype="multipart/form-data">
                     <input type="hidden" id="editProductId" name="id">

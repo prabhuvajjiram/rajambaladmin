@@ -37,25 +37,42 @@ try {
             throw new Exception("Database connection failed: " . mysqli_connect_error());
         }
 
-        $sql = "SELECT * FROM products WHERE id = ?";
+        $sql = "SELECT p.*, GROUP_CONCAT(c.id, ':', c.color_name, ':', c.color_image_path SEPARATOR '|') as colors 
+                FROM products p 
+                LEFT JOIN colors c ON p.id = c.product_id 
+                WHERE p.id = ?
+                GROUP BY p.id";
+        
         if ($stmt = mysqli_prepare($conn, $sql)) {
             mysqli_stmt_bind_param($stmt, "i", $product_id);
             if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_store_result($stmt);
+                $result = mysqli_stmt_get_result($stmt);
                 
-                if (mysqli_stmt_num_rows($stmt) > 0) {
-                    mysqli_stmt_bind_result($stmt, $id, $title, $price, $description, $image_path);
-                    mysqli_stmt_fetch($stmt);
-                    
+                if ($row = mysqli_fetch_assoc($result)) {
+                    $product = [
+                        'id' => $row['id'],
+                        'title' => $row['title'],
+                        'price' => $row['price'],
+                        'description' => $row['description'],
+                        'image_path' => $row['image_path'],
+                        'colors' => []
+                    ];
+
+                    if ($row['colors']) {
+                        $colors = explode('|', $row['colors']);
+                        foreach ($colors as $color) {
+                            list($color_id, $color_name, $color_image_path) = explode(':', $color);
+                            $product['colors'][] = [
+                                'id' => $color_id,
+                                'name' => $color_name,
+                                'image_path' => $color_image_path
+                            ];
+                        }
+                    }
+
                     sendJsonResponse([
                         "status" => "success",
-                        "product" => [
-                            "id" => $id,
-                            "title" => $title,
-                            "price" => $price,
-                            "description" => $description,
-                            "image" => $image_path
-                        ]
+                        "product" => $product
                     ]);
                 } else {
                     sendJsonResponse(["status" => "error", "message" => "Product not found."]);

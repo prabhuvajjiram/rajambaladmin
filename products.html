@@ -70,5 +70,45 @@
     </footer>
 
     <script src="js/productData.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('get_products.php')
+                .then(response => response.json())
+                .then(data => {
+                    const productsGrid = document.getElementById('allProductsGrid');
+                    if (data.products && data.products.length > 0) {
+                        data.products.forEach(product => {
+                            const productElement = document.createElement('div');
+                            productElement.className = 'product-card';
+                            let colorOptions = '';
+                            if (product.colors) {
+                                const colors = product.colors.split('|');
+                                colorOptions = '<div class="color-options">';
+                                colors.forEach(color => {
+                                    const [colorName, colorImagePath] = color.split(':');
+                                    colorOptions += `<button class="color-option" style="background-image: url('${colorImagePath}')" title="${colorName}"></button>`;
+                                });
+                                colorOptions += '</div>';
+                            }
+                            productElement.innerHTML = `
+                                <img src="${product.image_path}" alt="${product.title}">
+                                <h3>${product.title}</h3>
+                                <p>₹${product.price.toFixed(2)}</p>
+                                ${colorOptions}
+                                <button class="add-to-cart">Add to Cart</button>
+                            `;
+                            productsGrid.appendChild(productElement);
+                        });
+                    } else {
+                        productsGrid.innerHTML = '<p>No products available at the moment. Please check back later.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const productsGrid = document.getElementById('allProductsGrid');
+                    productsGrid.innerHTML = '<p>An error occurred while loading products. Please try again later.</p>';
+                });
+        });
+    </script>
 </body>
 </html>

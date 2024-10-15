@@ -1,9 +1,28 @@
 <?php
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 header('Content-Type: application/json; charset=utf-8');
 
-require_once 'db_config.php';
+$debug_messages = [];
+$error_messages = [];
+
+function logDebug($message) {
+    global $debug_messages;
+    $debug_messages[] = date('[Y-m-d H:i:s] ') . $message;
+}
+
+function logError($message) {
+    global $error_messages;
+    $error_messages[] = $message;
+}
+
+// Custom error handler
+function customErrorHandler($errno, $errstr, $errfile, $errline) {
+    logDebug("PHP Error [$errno]: $errstr in $errfile on line $errline");
+    logError("PHP Error [$errno]: $errstr in $errfile on line $errline");
+}
+
+set_error_handler("customErrorHandler");
 
 function utf8ize($mixed) {
     if (is_array($mixed)) {
@@ -16,55 +35,52 @@ function utf8ize($mixed) {
     return $mixed;
 }
 
+require_once 'db_config.php';
+
+$response = ['status' => 'error', 'message' => '', 'products' => []];
+
 try {
-    if (!$conn) {
-        throw new Exception("Database connection failed");
+    $sql = "SELECT p.*, GROUP_CONCAT(c.color_name, ':', c.color_image_path SEPARATOR '|') as colors 
+            FROM products p 
+            LEFT JOIN colors c ON p.id = c.product_id 
+            GROUP BY p.id";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result) {
+        $products = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $product = [
+                'id' => $row['id'],
+                'title' => $row['title'],
+                'price' => $row['price'],
+                'image_path' => $row['image_path'],
+                'colors' => []
+            ];
+
+            if ($row['colors']) {
+                $colors = explode('|', $row['colors']);
+                foreach ($colors as $color) {
+                    list($name, $image) = explode(':', $color);
+                    $product['colors'][] = [
+                        'name' => $name,
+                        'image_path' => $image
+                    ];
+                }
+            }
+
+            $products[] = $product;
+        }
+
+        $response['status'] = 'success';
+        $response['products'] = $products;
+    } else {
+        throw new Exception("Error fetching products: " . mysqli_error($conn));
     }
-
-    $sql = "SELECT * FROM products ORDER BY created_at DESC";
-    $result = $conn->query($sql);
-
-    if ($result === false) {
-        throw new Exception("Database query failed: " . $conn->error);
-    }
-
-    $products = [];
-    while ($row = $result->fetch_assoc()) {
-        $products[] = [
-            'id' => $row['id'],
-            'title' => utf8ize($row['title']),
-            'price' => floatval($row['price']),
-            'image' => utf8ize($row['image_path']),
-            'description' => utf8ize($row['description'])
-        ];
-    }
-
-$output = ob_get_clean();
-$json_response = json_encode([
-    "status" => "success",
-    "products" => $products,
-    "debug_output" => $output
-]);
-
-if ($json_response === false) {
-    $json_response = json_encode([
-        "status" => "error",
-        "message" => "JSON encoding failed: " . json_last_error_msg(),
-        "debug_output" => $output
-    ]);
-}
-
-echo $json_response;
-
-
 } catch (Exception $e) {
-    error_log("Error in get_products.php: " . $e->getMessage());
-    echo json_encode([
-        "status" => "error",
-        "message" => "An error occurred while fetching products. Please try again later.",
-        "debug" => $e->getMessage()
-    ]);
+    $response['message'] = $e->getMessage();
 }
 
-$conn->close();
-?>
+mysqli_close($conn);
+
+header('Content-Type: application/json');
+echo json_encode($response);
