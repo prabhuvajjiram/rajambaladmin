@@ -237,13 +237,17 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             <div class="modal-content">
                 <span class="close">&times;</span>
                 <h2>Edit Product</h2>
-                <form id="editProductForm" enctype="multipart/form-data">
-                    <input type="hidden" id="editProductId" name="id">
-                    <input type="text" id="editTitle" name="title" placeholder="Product Title" required>
-                    <input type="number" id="editPrice" name="price" placeholder="Price" step="0.01" required>
-                    <textarea id="editDescription" name="description" placeholder="Product Description" required></textarea>
-                    <img id="currentImage" src="" alt="Current Product Image" style="max-width: 200px;">
+                <form id="editProductForm" style="display: none;">
+                    <input type="hidden" id="editId" name="id">
+                    <label for="editTitle">Title:</label>
+                    <input type="text" id="editTitle" name="title" required>
+                    <label for="editPrice">Price:</label>
+                    <input type="number" id="editPrice" name="price" step="0.01" required>
+                    <label for="editDescription">Description:</label>
+                    <textarea id="editDescription" name="description" required></textarea>
+                    <label for="editImage">New Main Image (optional):</label>
                     <input type="file" id="editImage" name="image" accept="image/*">
+                    <div id="editColorFields"></div>
                     <button type="submit" class="btn">Update Product</button>
                 </form>
             </div>

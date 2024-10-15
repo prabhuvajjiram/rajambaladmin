@@ -1,0 +1,69 @@
+[14-Oct-2024 02:03:59 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user 'rajambal_admin'@'localhost' (using password: YES) in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/db_config.php(7): mysqli_connect()
+#1 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once('/home/theangel/...')
+#2 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 02:04:11 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user 'rajambal_admin'@'localhost' (using password: YES) in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/db_config.php(7): mysqli_connect()
+#1 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once('/home/theangel/...')
+#2 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 02:13:00 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user 'rajambal_admin'@'localhost' (using password: YES) in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/db_config.php(7): mysqli_connect()
+#1 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once('/home/theangel/...')
+#2 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 02:13:15 UTC] PHP Fatal error:  Uncaught mysqli_sql_exception: Access denied for user 'rajambal_admin'@'localhost' (using password: YES) in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/db_config.php(7): mysqli_connect()
+#1 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once('/home/theangel/...')
+#2 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:30 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:32 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:33 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:33 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:33 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7
+[14-Oct-2024 03:04:33 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function mysqli_connect() in /home/theangel/public_html/rajambalcottons.com/db_config.php:7
+Stack trace:
+#0 /home/theangel/public_html/rajambalcottons.com/get_products.php(6): require_once()
+#1 {main}
+  thrown in /home/theangel/public_html/rajambalcottons.com/db_config.php on line 7

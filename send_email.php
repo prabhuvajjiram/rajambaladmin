@@ -2,16 +2,16 @@
 header('Content-Type: application/json');
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'] ?? '';
-    $email = $_POST['email'] ?? '';
+    $name = $_POST['name'] ?? 'Customer';
+    $email = $_POST['email'] ?? 'sales@rajambalcottons.com';
     $mobile = $_POST['mobile'] ?? '';
-    $subject = $_POST['subject'] ?? '';
+    $subject = $_POST['subject'] ?? 'New Order';
     $message = $_POST['message'] ?? '';
     
     
-    $to = "rajambal@rajambalcottons.com"; // Replace with your email address
+    $to = "sales@rajambalcottons.com"; // Replace with your email address
     $headers = "From: $email\r\n";
-    $headers .= "Cc: prabhu.vajjiram@gmail.com \r\n";
+    $headers .= "Cc: rajambal@rajambalcottons.com \r\n";
     $headers .= "Reply-To: $email\r\n";
     $headers .= "X-Mailer: PHP/" . phpversion();
     
