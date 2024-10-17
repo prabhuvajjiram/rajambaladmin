@@ -363,9 +363,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', submitContactForm);
+    } else {
+        console.log('Contact form not found on this page');
     }
 
-    document.querySelector('#searchInput').addEventListener('input', searchProducts);
+    const searchInput = document.querySelector('#searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', searchProducts);
+    } else {
+        console.log('Search input not found on this page');
+    }
+
+    const productForm = document.getElementById('productForm');
+    if (productForm) {
+        productForm.addEventListener('submit', submitProductForm);
+    } else {
+        console.log('Product form not found on this page');
+    }
 });
 
 function toggleMenu() {
@@ -453,5 +467,4 @@ function submitContactForm(event) {
     });
 }
 
-// Attach this function to your form's submit event
-document.getElementById('productForm').addEventListener('submit', submitProductForm);
+
