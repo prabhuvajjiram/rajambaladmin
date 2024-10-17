@@ -1,6 +1,15 @@
 <?php
 header('Content-Type: application/json');
 
+// Function to log errors
+function logError($message) {
+    $log_file = 'email_errors.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $log_message = "[$timestamp] $message\n";
+    file_put_contents($log_file, $log_message, FILE_APPEND);
+    return $log_message;
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'] ?? 'Customer';
     $email = $_POST['email'] ?? 'sales@rajambalcottons.com';
@@ -8,10 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $subject = $_POST['subject'] ?? 'New Order';
     $message = $_POST['message'] ?? '';
     
-    
-    $to = "sales@rajambalcottons.com"; // Replace with your email address
+    $to = "sales@rajambalcottons.com";
     $headers = "From: $email\r\n";
-    $headers .= "Cc: rajambal@rajambalcottons.com \r\n";
+    $headers .= "Cc: rajambal@rajambalcottons.com\r\n";
     $headers .= "Reply-To: $email\r\n";
     $headers .= "X-Mailer: PHP/" . phpversion();
     
@@ -25,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mail_result = mail($to, $subject, $email_body, $headers);
     
     if ($mail_result) {
+        logError("Email sent successfully: To: $to, Subject: $subject");
         echo json_encode(["status" => "success", "message" => "Message sent successfully!"]);
     } else {
         $error_message = "Failed to send message. Error: " . error_get_last()['message'];

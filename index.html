@@ -28,6 +28,7 @@
             position: fixed;
             width: 100%;
             z-index: 1000;
+            padding: 5px 0;
         }
         .container {
             max-width: 1200px;
@@ -39,13 +40,41 @@
             align-items: center;
         }
         .logo-icon {
-            width: 40px;
-            height: 40px;
+            width: 25px;
+            height: 25px;
         }
         .logo-text {
             font-size: 1.5rem;
             font-weight: 600;
             margin-left: 10px;
+        }
+        .gradient-text {
+            font-size: 24px; 
+            font-weight: bold;
+            background-image: linear-gradient(90deg, #4a90e2, #9b51e0, #e66465);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            margin: 0; 
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 10px; 
+            }
+            .header .container {
+                padding-top: 10px; 
+            }
+            .logo {
+                margin-bottom: 5px; 
+            }
+            .menu-icon {
+                top: 10px; 
+            }
+            .gradient-text {
+                font-size: 30px;
+            }
         }
     </style>
     
@@ -99,7 +128,7 @@
                 <a href="#home">
                     <img src="images/rc.svg" alt="Rajambal Cottons Logo" class="logo-icon">
                 </a>
-                <span class="logo-text">Rajambal Cottons</span>
+                <span class="gradient-text">Rajambal Cottons</span>
             </div>
             <button class="menu-toggle" aria-label="Toggle menu">
                 <span class="hamburger"></span>

@@ -209,7 +209,28 @@ body {
     .admin-nav a:hover {
         background-color: #e0e0e0;
     }
-
+    .header .container {
+        padding: 5px 10px; 
+    }
+    .logo-icon {
+        width: 25px; 
+        height: 25px;
+    }
+    .gradient-text {
+        font-size: 18px; 
+    }
+    .menu-toggle {
+        padding: 5px; 
+    }
+    .hamburger, .hamburger::before, .hamburger::after {
+        height: 2px; 
+    }
+    .hamburger::before {
+        top: -6px; 
+    }
+    .hamburger::after {
+        bottom: -6px; 
+    }
 
 }
 

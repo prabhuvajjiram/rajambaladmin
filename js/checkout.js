@@ -149,11 +149,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
     displayCheckoutItems();
 
-    checkoutButton.addEventListener('click', function() {
-        // Here you would typically handle the checkout process
-        // For now, we'll just clear the cart and show a message
-        localStorage.removeItem('cart');
-        alert('Thank you for your purchase! Our website is currently under construction. To complete your purchase, please call our store.');
-        window.location.href = 'index.html'; // Redirect to home page after purchase
-    });
+        checkoutButton.addEventListener('click', function() {
+                // Get cart items and total price
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const totalPrice = document.getElementById('totalPrice').textContent;
+                
+                // Prepare the message
+                const message = `New order details:\n\n${cart.map(item => 
+                    `${item.title} - Quantity: ${item.quantity} - Price: ₹${item.price}`
+                ).join('\n')}\n\n${totalPrice}`;
+
+                // Prepare the data to send
+                const data = new FormData();
+                data.append('name', 'Customer');
+                data.append('email', 'sales@rajambalcottons.com');
+                data.append('subject', 'New Order from Rajambal Cottons');
+                data.append('message', message);
+
+                // Send the email
+                fetch('send_email.php', {
+                    method: 'POST',
+                    body: data
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 'success') {
+                        alert('Thank you for your purchase! Our website is currently under construction. To complete your purchase, please call our store.');
+                        localStorage.removeItem('cart');
+                        window.location.href = 'index.html'; // Redirect to home page
+                    } else {
+                        alert('There was an error processing your order. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error processing your order. Please try again.');
+                });
+            });
+
 });

@@ -292,7 +292,57 @@ const searchProducts = debounce(() => {
     // Implement search functionality here
 }, 300);
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM fully loaded and parsed');
+
+    // Hamburger menu functionality
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mainNav = document.querySelector('.main-nav');
+    
+
+    if (menuToggle && mainNav) {
+        menuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            toggleMenu();
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!mainNav.contains(event.target) && !menuToggle.contains(event.target)) {
+                closeMenu();
+            }
+        });
+
+        // Handle menu item clicks
+        mainNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                
+                if (href.startsWith('#')) {
+                    // For hash links (internal page links)
+                    e.preventDefault();
+                    closeMenu();
+                    const targetElement = document.querySelector(href);
+                    if (targetElement) {
+                        setTimeout(() => {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }, 300); // Delay to allow menu to close
+                    }
+                } else {
+                    // For external links, just close the menu
+                    closeMenu();
+                }
+            });
+        });
+
+        // Prevent clicks inside the menu from closing it
+        mainNav.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    } else {
+        console.error('Menu toggle or main nav not found');
+    }
+
     fetchProducts();
     loadCartFromLocalStorage();
     
@@ -310,9 +360,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeCartBtn) {
         closeCartBtn.addEventListener('click', toggleCartMenu);
     }
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', submitContactForm);
+    }
 
     document.querySelector('#searchInput').addEventListener('input', searchProducts);
 });
+
+function toggleMenu() {
+    const mainNav = document.querySelector('.main-nav');
+    document.body.classList.toggle('menu-open');
+    mainNav.classList.toggle('active');
+    console.log('Menu toggled');
+}
+
+function closeMenu() {
+    const mainNav = document.querySelector('.main-nav');
+    document.body.classList.remove('menu-open');
+    mainNav.classList.remove('active');
+    console.log('Menu closed');
+}
 
 function toggleCartMenu() {
     const cartMenu = document.querySelector('.cart-menu');
@@ -347,6 +415,41 @@ function submitProductForm(event) {
     .catch(error => {
         console.error('Error:', error);
         alert('An unexpected error occurred. Please try again.');
+    });
+}
+
+function submitContactForm(event) {
+    event.preventDefault();
+    console.log('Contact form submitted');
+
+    const formData = new FormData(event.target);
+    const formMessage = document.getElementById('formMessage');
+    
+    fetch('send_email.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log('Response received:', response);
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data received:', data);
+        formMessage.textContent = data.message;
+        formMessage.style.display = 'block';
+        formMessage.style.color = data.status === 'success' ? 'green' : 'red';
+        
+        if (data.status === 'success') {
+            event.target.reset();
+        } else {
+            console.error('Error details:', data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        formMessage.textContent = 'An error occurred. Please try again later.';
+        formMessage.style.display = 'block';
+        formMessage.style.color = 'red';
     });
 }
 
