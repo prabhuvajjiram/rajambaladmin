@@ -54,6 +54,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 function loadProducts() {
+    const productList = document.getElementById('productList');
+    productList.innerHTML = '';
     fetch('get_products.php')
         .then(response => response.json())
         .then(data => {

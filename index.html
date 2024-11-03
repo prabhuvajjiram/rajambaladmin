@@ -6,15 +6,17 @@
     <meta name="description" content="Rajambal Cottons offers premium quality cotton products including sarees, churidar, and dhotis. Experience comfort and style with our traditional and modern designs.">
     <title>Rajambal Cottons - Premium Cotton Products</title>
     <link rel="canonical" href="https://www.rajambalcottons.com/index.html" />
+    <link rel="preload" as="image" href="images/hero-bg.jpg">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="icon" href="favicon.ico">
     
     <!-- Preload critical assets -->
     <link rel="preload" href="css/styles.css" as="style">
     <link rel="preload" href="js/main_updated.js" as="script">
+    <link rel="preload" href="js/checkout.js" as="script">
     
-    <!-- Inline critical CSS -->
+    <!-- Inline critical CSS 
     <style>
         /* Add only the most critical styles here */
         body, html {
@@ -76,6 +78,19 @@
                 font-size: 30px;
             }
         }
+    </style> -->
+    <style>
+        body, html { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        .header { background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: fixed; width: 100%; z-index: 1000; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .logo { display: flex; align-items: center; }
+        .logo-icon { width: 25px; height: 25px; }
+        .logo-text { font-size: 1.5rem; font-weight: 600; margin-left: 10px; }
+        .gradient-text { font-size: 24px;  font-weight: bold; background-image: linear-gradient(90deg, #4a90e2, #9b51e0, #e66465); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin: 0; }
+        .hero { background-image: url('images/hero-bg.jpg'); background-size: cover; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .hero h1 { font-size: 3rem; color: #fff; }
+        /* Add other critical styles... */
+    </style>
     </style>
     
     <!-- Preload fonts -->
@@ -102,7 +117,7 @@
       "@context": "https://schema.org",
       "@type": "ClothingStore",
       "name": "Rajambal Cottons",
-      "image": "https://www.rajambalcottons.com/images/logo.png",
+      "image": "https://www.rajambalcottons.com/images/rc.svg",
       "description": "Premium cotton products including sarees, churidar, and dhotis.",
       "address": {
         "@type": "PostalAddress",
@@ -202,7 +217,7 @@
                 <h2>About Rajambal Cottons</h2>
                 <div class="about-content">
                     <div class="about-image">
-                        <img src="images/Saree.jpg" alt="Sarees">
+                        <img src="images/Saree.jpg" alt="about" width="400" height="300" loading="lazy">
                     </div>
                     <div class="about-text">
                         <p>Rajambal Cottons has been a trusted name in premium cotton saree products for over 15 years. Our commitment to quality and sustainability sets us apart in the textile industry.</p>
@@ -226,7 +241,7 @@
                     </form>
                     <div id="formMessage" style="display: none;"></div>
                     <div class="map-container" data-src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.0647748982713!2d79.70246931482038!3d12.835543990947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a52c1df7e7c2c6d%3A0x5c0d8d688e5aea9f!2s37%2C%20Mettu%20St%2C%20Ennaikkaran%2C%20Kanchipuram%2C%20Tamil%20Nadu%20631501%2C%20India!5e0!3m2!1sen!2sus!4v1623344120978!5m2!1sen!2sus">
-                    <img src="images/map-placeholder.jpg" alt="Map Placeholder">
+                    <img src="images/map-placeholder.jpg" alt="Map Placeholder" loading="lazy">
                     <button class="load-map-button">Load Map</button>
                     </div>
                 </div>
@@ -258,7 +273,7 @@
                     <h3>Contact Info</h3>
                     <p>37, Mettu Street, Kanchipuram</p>
                     <p>Email: <a href="mailto:sales@rajambalcottons.com">Suresh</a></p>
-                    <p>Phone: +91-44-67259797, +91-9443369336</p>
+                    <p>Phone: +91-9445069336, +91-9443369336</p>
                     <p>Fax: +91-44-27233699</p>
                 </div>
             </div>
@@ -276,6 +291,6 @@
     </div>
 
     <script src="js/main_updated.js" defer></script>
-    <script src="js/checkout.js"></script>
+    <script src="js/checkout.js" defer></script>
 </body>
 </html>

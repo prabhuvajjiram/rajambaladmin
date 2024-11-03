@@ -240,6 +240,7 @@ body {
     background-size: cover;
     background-position: center;
     height: 100vh;
+    min-height: 500px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -438,7 +439,10 @@ body {
 
 .about-image img {
     width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
     border-radius: 10px;
+    object-fit: cover;
 }
 
 .about-text {

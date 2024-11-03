@@ -298,7 +298,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Hamburger menu functionality
     const menuToggle = document.querySelector('.menu-toggle');
     const mainNav = document.querySelector('.main-nav');
-    
 
     if (menuToggle && mainNav) {
         menuToggle.addEventListener('click', function(e) {
@@ -360,10 +359,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (closeCartBtn) {
         closeCartBtn.addEventListener('click', toggleCartMenu);
     }
+    
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', submitContactForm);
-    } else {
+    }
+     else {
         console.log('Contact form not found on this page');
     }
 
@@ -381,6 +382,7 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Product form not found on this page');
     }
 });
+
 
 function toggleMenu() {
     const mainNav = document.querySelector('.main-nav');
@@ -402,34 +404,6 @@ function toggleCartMenu() {
         cartMenu.classList.toggle('active');
         updateCartMenu();
     }
-}
-
-function submitProductForm(event) {
-    event.preventDefault();
-    
-    const form = event.target;
-    const formData = new FormData(form);
-
-    fetch('upload_product.php', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Product uploaded successfully
-            alert(data.message);
-            // Optionally, reset the form or redirect to a product list page
-            form.reset();
-        } else {
-            // There was an error
-            alert('Error: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An unexpected error occurred. Please try again.');
-    });
 }
 
 function submitContactForm(event) {
@@ -468,3 +442,5 @@ function submitContactForm(event) {
 }
 
 
+// Attach this function to your form's submit event
+//document.getElementById('productForm').addEventListener('submit', submitProductForm);
