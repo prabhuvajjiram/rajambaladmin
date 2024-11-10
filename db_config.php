@@ -3,8 +3,8 @@ define('DB_SERVER', 'localhost');
 define('DB_USERNAME', 'rajambal_admin');
 //define('DB_USERNAME', 'theangel_admin'); PROD
 define('DB_PASSWORD', 's3DqGWV22-A%');
-//define('DB_NAME', 'theangel_Rajambal'); - This is for prod
-define('DB_NAME', 'rajambal_rajambal');
+define('DB_NAME', 'theangel_rajambal'); //- This is for prod
+//define('DB_NAME', 'rajambal_rajambal');
 $conn = mysqli_connect(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
 if($conn === false){

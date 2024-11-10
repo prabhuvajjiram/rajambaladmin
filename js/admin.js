@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     listProductsBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        loadProducts();
+        refreshProducts();
         productList.style.display = 'block';
         addProductForm.style.display = 'none';
     });
@@ -28,9 +28,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (addColorBtn) {
         addColorBtn.addEventListener('click', addColorInput);
-        console.log('Add Color button event listener added');
-    } else {
-        console.error('Add Color button not found');
     }
 
     editProductForm.addEventListener('submit', function(e) {
@@ -39,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     closeEditModal.addEventListener('click', function() {
-        editProductModal.style.display = 'none';
+        document.getElementById('editProductModal').style.display = 'none';
     });
 
     window.addEventListener('click', function(event) {
@@ -48,34 +45,54 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Load products when the page loads
-    loadProducts();
+    // Initial load of products
+    refreshProducts();
 });
 
-
-function loadProducts() {
+function refreshProducts(showLoading = true) {
     const productList = document.getElementById('productList');
-    productList.innerHTML = '';
-    fetch('get_products.php')
-        .then(response => response.json())
-        .then(data => {
-            console.log('Products data:', data);
-            if (data.status === 'success') {
-                displayProducts(data.products);
-            } else {
-                console.error('Error loading products:', data.message);
-                alert('Error loading products. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-        });
+    
+    if (showLoading) {
+        productList.innerHTML = '<div class="loading">Loading products...</div>';
+    }
+
+    return fetch('get_products.php', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            displayProducts(data.products);
+            return data.products;
+        } else {
+            throw new Error(data.message || 'Failed to load products');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        productList.innerHTML = `<div class="error">Error loading products: ${error.message}</div>`;
+        if (error.message.includes('Unauthorized')) {
+            window.location.href = 'login.php';
+        }
+        return [];
+    });
 }
 
 function displayProducts(products) {
     const productList = document.getElementById('productList');
     productList.innerHTML = '';
+    
     products.forEach(product => {
         const productItem = document.createElement('div');
         productItem.className = 'product-item';
@@ -86,7 +103,9 @@ function displayProducts(products) {
             product.colors.forEach(color => {
                 colorHtml += `
                     <div class="color-item">
-                        <img src="${color.image_path}" alt="${color.name}" title="${color.name}" style="width: 30px; height: 30px;" onerror="this.onerror=null; this.src='images/placeholder.png';">
+                        <img src="${color.image_path}" alt="${color.name}" title="${color.name}" 
+                             style="width: 30px; height: 30px;" 
+                             onerror="this.onerror=null; this.src='images/placeholder.png';">
                         <span>${color.name}</span>
                     </div>
                 `;
@@ -97,7 +116,8 @@ function displayProducts(products) {
         }
         
         productItem.innerHTML = `
-            <img src="${product.image_path}" alt="${product.title}" style="width: 50px; height: 50px;">
+            <img src="${product.image_path}" alt="${product.title}" style="width: 50px; height: 50px;"
+                 onerror="this.onerror=null; this.src='images/placeholder.png';">
             <span>${product.title}</span>
             <span>₹${product.price}</span>
             <div class="product-colors">
@@ -105,8 +125,8 @@ function displayProducts(products) {
                 ${colorHtml}
             </div>
             <div class="product-actions">
-                <button onclick="editProduct(${product.id})">Edit</button>
-                <button onclick="deleteProduct(${product.id})">Delete</button>
+                <button onclick="editProduct(${product.id})" class="edit-btn">Edit</button>
+                <button onclick="deleteProduct(${product.id})" class="delete-btn">Delete</button>
             </div>
         `;
         productList.appendChild(productItem);
@@ -117,7 +137,6 @@ function handleProductSubmit(e) {
     e.preventDefault();
     const formData = new FormData(this);
     
-    console.log('Submitting new product form');
     const colorInputs = document.querySelectorAll('.color-input');
     colorInputs.forEach((colorInput, index) => {
         const colorName = colorInput.querySelector('input[type="text"]').value;
@@ -128,21 +147,22 @@ function handleProductSubmit(e) {
         }
     });
 
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-    }
-    
     fetch('upload_product.php', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'same-origin'
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        console.log('Server response:', data);
-        if (data.status === 'success') {
+        if (data.success) {
             alert('Product added successfully');
-            loadProducts();
             this.reset();
+            refreshProducts();
             document.getElementById('colorInputs').innerHTML = `
                 <div class="color-input">
                     <input type="text" name="colors[0][name]" placeholder="Color Name">
@@ -150,17 +170,16 @@ function handleProductSubmit(e) {
                 </div>
             `;
         } else {
-            alert('Error: ' + data.message);
+            throw new Error(data.message || 'Failed to add product');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred while adding the product');
+        alert('Error adding product: ' + error.message);
     });
 }
 
 function addColorInput() {
-    console.log('Adding new color input');
     const colorInputs = document.getElementById('colorInputs');
     const newColorInput = document.createElement('div');
     newColorInput.className = 'color-input';
@@ -170,25 +189,38 @@ function addColorInput() {
         <input type="file" name="colors[${colorIndex}][image]" accept="image/*">
     `;
     colorInputs.appendChild(newColorInput);
-    console.log('New color input added. Total color inputs:', colorInputs.children.length);
 }
 
 function editProduct(id) {
     fetch(`get_product.php?id=${id}`)
         .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+            console.log('Response:', response);
             return response.json();
         })
         .then(data => {
-            console.log('Edit product data:', data);
-            if (data.status === 'success') {
-                document.getElementById('editProductId').value = data.product.id;
-                document.getElementById('editTitle').value = data.product.title;
-                document.getElementById('editPrice').value = data.product.price;
-                document.getElementById('editDescription').value = data.product.description;
-                document.getElementById('currentImage').src = data.product.image_path;
+            console.log('Data:', data);
+            if (data.success) {
+                const product = data.product;
+                document.getElementById('editId').value = product.id;
+                document.getElementById('editTitle').value = product.title;
+                document.getElementById('editPrice').value = product.price;
+                document.getElementById('editDescription').value = product.description;
+
+                // Populate colors if available
+                const editColorFields = document.getElementById('editColorFields');
+                editColorFields.innerHTML = ''; // Clear existing colors
+                if (product.colors && product.colors.length > 0) {
+                    product.colors.forEach(color => {
+                        editColorFields.innerHTML += `
+                            <div class="color-input">
+                                <input type="text" name="colors[${color.id}][name]" value="${color.name}" placeholder="Color Name">
+                                <input type="file" name="colors[${color.id}][image]" accept="image/*">
+                            </div>
+                        `;
+                    });
+                }
+
+                // Show the modal
                 document.getElementById('editProductModal').style.display = 'block';
             } else {
                 alert('Error fetching product details: ' + data.message);
@@ -200,50 +232,65 @@ function editProduct(id) {
         });
 }
 
+
 function updateProduct(formData) {
     fetch('edit_product.php', {
         method: 'POST',
-        body: formData
+        body: formData,
+        credentials: 'same-origin'
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         if (data.status === 'success') {
             alert('Product updated successfully!');
             document.getElementById('editProductModal').style.display = 'none';
-            loadProducts();
+            refreshProducts();
         } else {
-            alert('Error updating product: ' + data.message);
+            throw new Error(data.message || 'Failed to update product');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred. Please try again.');
+        alert('Error updating product: ' + error.message);
     });
 }
 
 function deleteProduct(id) {
-    if (confirm('Are you sure you want to delete this product?')) {
-        fetch('delete_product.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `id=${id}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                alert('Product deleted successfully!');
-                loadProducts();
-            } else {
-                alert('Error deleting product: ' + data.message);
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred. Please try again.');
-        });
+    if (!confirm('Are you sure you want to delete this product?')) {
+        return;
     }
+
+    fetch('delete_product.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `id=${id}`,
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Product deleted successfully!');
+            refreshProducts();
+        } else {
+            throw new Error(data.message || 'Failed to delete product');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting product: ' + error.message);
+    });
 }
 
 function logout() {
@@ -253,43 +300,39 @@ function logout() {
     })
     .then(response => {
         if (response.ok) {
-            window.location.href = 'https://www.rajambalcottons.com/';
+            window.location.href = 'login.php';
         } else {
-            console.error('Logout failed');
+            throw new Error('Logout failed');
         }
     })
     .catch(error => {
         console.error('Error:', error);
+        alert('Error during logout: ' + error.message);
     });
 }
 
 function toggleMenu() {
-    var nav = document.getElementById("adminNav");
-    var menuIcon = document.querySelector(".menu-icon");
+    const nav = document.getElementById("adminNav");
+    const menuIcon = document.querySelector(".menu-icon");
     nav.classList.toggle("show");
-    
-    if (nav.classList.contains("show")) {
-        menuIcon.innerHTML = "✕";
-    } else {
-        menuIcon.innerHTML = "☰";
-    }
+    menuIcon.innerHTML = nav.classList.contains("show") ? "✕" : "☰";
 }
 
-// Close the menu when clicking outside of it
+// Close menu when clicking outside
 document.addEventListener('click', function(event) {
-    var nav = document.getElementById("adminNav");
-    var menuIcon = document.querySelector(".menu-icon");
+    const nav = document.getElementById("adminNav");
+    const menuIcon = document.querySelector(".menu-icon");
     if (!nav.contains(event.target) && !menuIcon.contains(event.target)) {
         nav.classList.remove("show");
         menuIcon.innerHTML = "☰";
     }
 });
 
-// Close the menu when a menu item is clicked
+// Close menu when menu item is clicked
 document.querySelectorAll('#adminNav a').forEach(item => {
     item.addEventListener('click', function() {
-        var nav = document.getElementById("adminNav");
-        var menuIcon = document.querySelector(".menu-icon");
+        const nav = document.getElementById("adminNav");
+        const menuIcon = document.querySelector(".menu-icon");
         nav.classList.remove("show");
         menuIcon.innerHTML = "☰";
     });

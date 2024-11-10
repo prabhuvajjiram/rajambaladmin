@@ -34,6 +34,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 }
             }
 
+            // Handle color updates if provided
+            if (isset($_POST['colors'])) {
+                foreach ($_POST['colors'] as $colorId => $colorData) {
+                    $colorName = mysqli_real_escape_string($conn, $colorData['name']);
+                    if (isset($_FILES['colors'][$colorId]['image']) && $_FILES['colors'][$colorId]['image']['error'] == UPLOAD_ERR_OK) {
+                        // Handle color image upload
+                        $colorImage = $_FILES['colors'][$colorId]['image'];
+                        $color_image_path = "images/colors/" . uniqid() . "_" . basename($colorImage['name']);
+                        move_uploaded_file($colorImage['tmp_name'], $color_image_path);
+                        $color_sql = "UPDATE colors SET color_name = ?, color_image_path = ? WHERE id = ?";
+                        $color_stmt = mysqli_prepare($conn, $color_sql);
+                        mysqli_stmt_bind_param($color_stmt, "ssi", $colorName, $color_image_path, $colorId);
+                        mysqli_stmt_execute($color_stmt);
+                    } else {
+                        // Update color name only
+                        $color_sql = "UPDATE colors SET color_name = ? WHERE id = ?";
+                        $color_stmt = mysqli_prepare($conn, $color_sql);
+                        mysqli_stmt_bind_param($color_stmt, "si", $colorName, $colorId);
+                        mysqli_stmt_execute($color_stmt);
+                    }
+                }
+            }
+
             $response['status'] = 'success';
             $response['message'] = 'Product updated successfully';
         } else {

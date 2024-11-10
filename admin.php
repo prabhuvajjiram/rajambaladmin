@@ -233,25 +233,25 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             </form>
         </div>
 
-        <div id="editProductModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <h2>Edit Product</h2>
-                <form id="editProductForm" style="display: none;">
-                    <input type="hidden" id="editId" name="id">
-                    <label for="editTitle">Title:</label>
-                    <input type="text" id="editTitle" name="title" required>
-                    <label for="editPrice">Price:</label>
-                    <input type="number" id="editPrice" name="price" step="0.01" required>
-                    <label for="editDescription">Description:</label>
-                    <textarea id="editDescription" name="description" required></textarea>
-                    <label for="editImage">New Main Image (optional):</label>
-                    <input type="file" id="editImage" name="image" accept="image/*">
-                    <div id="editColorFields"></div>
-                    <button type="submit" class="btn">Update Product</button>
-                </form>
-            </div>
-        </div>
+  <div id="editProductModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="document.getElementById('editProductModal').style.display='none'">&times;</span>
+        <h2>Edit Product</h2>
+        <form id="editProductForm" style="display: block;">
+            <input type="hidden" id="editId" name="id">
+            <label for="editTitle">Title:</label>
+            <input type="text" id="editTitle" name="title" required>
+            <label for="editPrice">Price:</label>
+            <input type="number" id="editPrice" name="price" step="0.01" required>
+            <label for="editDescription">Description:</label>
+            <textarea id="editDescription" name="description" required></textarea>
+            <label for="editImage">New Main Image (optional):</label>
+            <input type="file" id="editImage" name="image" accept="image/*">
+            <div id="editColorFields"></div>
+            <button type="submit" class="btn">Update Product</button>
+        </form>
+    </div>
+</div>
     </main>
 
     <script src="js/admin.js"></script>

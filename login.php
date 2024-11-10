@@ -1,8 +1,18 @@
 <?php
 session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', 'login_errors.log');
+
 require_once "db_config.php";
 
-// Check if the user is already logged in, if yes then redirect to admin page
+// Function to log debug information
+function logDebug($message) {
+    error_log(date('[Y-m-d H:i:s] ') . $message . "\n", 3, 'login_debug.log');
+}
+
+// Check if already logged in
 if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
     header("location: admin.php");
     exit;
@@ -11,6 +21,8 @@ if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){
 $login_err = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    logDebug('Processing login attempt');
+    
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
     
@@ -20,6 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_stmt_bind_param($stmt, "s", $param_username);
         $param_username = $username;
         
+        logDebug('Executing login query');
+        
         if(mysqli_stmt_execute($stmt)){
             mysqli_stmt_store_result($stmt);
             
@@ -27,6 +41,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 mysqli_stmt_bind_result($stmt, $id, $username, $hashed_password);
                 if(mysqli_stmt_fetch($stmt)){
                     if(password_verify($password, $hashed_password)){
+                        logDebug('Login successful for user: ' . $username);
+                        logDebug('Login successful for user: ' . $hashed_password);
+                        
+                        // Store session data
                         $_SESSION["loggedin"] = true;
                         $_SESSION["id"] = $id;
                         $_SESSION["username"] = $username;
@@ -34,13 +52,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         header("location: admin.php");
                         exit;
                     } else {
+                        logDebug('Password verification failed for user: ' . $username);
+                        logDebug('Password verification failed for user: ' . $hashed_password);
                         $login_err = "Invalid username or password.";
                     }
                 }
             } else {
+                logDebug('No user found with username: ' . $username);
                 $login_err = "Invalid username or password.";
             }
         } else {
+            logDebug('Query execution failed: ' . mysqli_error($conn));
             $login_err = "Oops! Something went wrong. Please try again later.";
         }
         
