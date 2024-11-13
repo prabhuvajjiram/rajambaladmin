@@ -1364,3 +1364,237 @@ Array
 
 )
 
+2024-11-14 00:07:12 - === Starting Product Upload ===
+2024-11-14 00:07:12 - POST Data:
+Array
+(
+    [title] => testinmobile
+    [price] => 123412
+    [description] => qwedwa
+    [color_names] => Array
+        (
+            [0] => red
+        )
+
+)
+
+2024-11-14 00:07:12 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => Saree_50.jpg
+            [full_path] => Saree_50.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php352E.tmp
+            [error] => 0
+            [size] => 64310
+        )
+
+    [additional_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => map-placeholder_63.jpg
+                )
+
+            [full_path] => Array
+                (
+                    [0] => map-placeholder_63.jpg
+                )
+
+            [type] => Array
+                (
+                    [0] => image/jpeg
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php352F.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 139595
+                )
+
+        )
+
+    [color_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => gemini.png
+                )
+
+            [full_path] => Array
+                (
+                    [0] => gemini.png
+                )
+
+            [type] => Array
+                (
+                    [0] => image/png
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php3530.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 12850
+                )
+
+        )
+
+)
+
+2024-11-14 00:07:12 - Database connection successful
+2024-11-14 00:07:12 - Started database transaction
+2024-11-14 00:07:12 - Processing primary image
+2024-11-14 00:07:12 - Primary image extension: jpg
+2024-11-14 00:07:12 - Saving primary image to: images/products/673531208d00f_primary.jpg
+2024-11-14 00:07:12 - Primary image processed successfully
+2024-11-14 00:07:12 - Inserting product into database
+2024-11-14 00:07:12 - Executing product insert with params:
+Array
+(
+    [title] => testinmobile
+    [price] => 123412
+    [description] => qwedwa
+    [image_path] => images/products/673531208d00f_primary.jpg
+)
+
+2024-11-14 00:07:12 - Product inserted successfully with ID: 56
+2024-11-14 00:07:12 - === Processing Additional Images ===
+2024-11-14 00:07:12 - Additional Images Data:
+Array
+(
+    [name] => Array
+        (
+            [0] => map-placeholder_63.jpg
+        )
+
+    [full_path] => Array
+        (
+            [0] => map-placeholder_63.jpg
+        )
+
+    [type] => Array
+        (
+            [0] => image/jpeg
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php352F.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 139595
+        )
+
+)
+
+2024-11-14 00:07:12 - Processing additional image 0
+2024-11-14 00:07:12 - Additional image 0 extension: jpg
+2024-11-14 00:07:12 - Saving additional image to: images/additional/67353120b098d_additional.jpg
+2024-11-14 00:07:12 - Executing additional image insert for image 0
+2024-11-14 00:07:12 - Additional image 0 processed and saved successfully
+2024-11-14 00:07:12 - === Processing Colors ===
+2024-11-14 00:07:12 - Color Names:
+Array
+(
+    [0] => red
+)
+
+2024-11-14 00:07:12 - Color Images:
+Array
+(
+    [name] => Array
+        (
+            [0] => gemini.png
+        )
+
+    [full_path] => Array
+        (
+            [0] => gemini.png
+        )
+
+    [type] => Array
+        (
+            [0] => image/png
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php3530.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 12850
+        )
+
+)
+
+2024-11-14 00:07:12 - Processing color 0: red
+2024-11-14 00:07:12 - Color image 0 extension: png
+2024-11-14 00:07:12 - Saving color image to: images/colors/67353120de0b3_color.png
+2024-11-14 00:07:13 - Executing color insert for color: red with path: images/colors/67353120de0b3_color.png
+2024-11-14 00:07:13 - Color 0 (red) processed and saved successfully
+2024-11-14 00:07:13 - === Product Upload Completed Successfully ===
+2024-11-14 00:07:13 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 56
+            [title] => testinmobile
+            [price] => 123412
+            [image_path] => images/products/673531208d00f_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-14 00:07:12
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+

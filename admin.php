@@ -354,6 +354,77 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
             font-size: 24px;
             cursor: pointer;
         }
+
+        /* Mobile Menu Styles */
+        .hamburger-menu {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 15px;
+        }
+
+        .hamburger-menu span {
+            width: 30px;
+            height: 3px;
+            background: #333;
+            border-radius: 10px;
+            transition: all 0.3s linear;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        @media screen and (max-width: 768px) {
+            .hamburger-menu {
+                display: flex;
+                z-index: 100;
+            }
+
+            .nav-menu {
+                display: none;
+                position: fixed;
+                top: 60px;
+                left: 0;
+                flex-direction: column;
+                width: 100%;
+                background-color: white;
+                padding: 20px;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .admin-header {
+                justify-content: space-between;
+                padding: 10px 20px;
+            }
+
+            .color-input {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .color-input input[type="text"],
+            .color-input input[type="file"] {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .color-input .remove-color {
+                align-self: flex-end;
+            }
+        }
     </style>
 </head>
 <body>
@@ -363,11 +434,15 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
                 <img src="images/rc.svg" alt="Rajambal Cottons Logo" class="logo-icon">
                 <span class="logo-text">Rajambal Cottons - Admin Panel</span>
             </div>
-            <div class="menu-icon" onclick="toggleMenu()">☰</div>
-            <nav class="admin-nav" id="adminNav">
-                <a href="#" id="listProductsBtn">List Products</a>
-                <a href="#" id="addProductBtn">Add Product</a>
-                <a href="#" onclick="logout()">Logout</a>
+            <button class="hamburger-menu" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <nav class="nav-menu" id="adminNav">
+                <button id="listProductsBtn" class="btn">List Products</button>
+                <button id="addProductBtn" class="btn">Add Product</button>
+                <button onclick="logout()" class="btn">Logout</button>
             </nav>
         </div>
     </header>

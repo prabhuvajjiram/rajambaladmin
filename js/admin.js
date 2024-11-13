@@ -400,15 +400,29 @@ function logout() {
 }
 
 function toggleMenu() {
-    const nav = document.getElementById("adminNav");
-    if (nav) {
-        nav.classList.toggle("show");
-        const menuIcon = document.querySelector('.menu-icon');
-        if (menuIcon) {
-            menuIcon.textContent = nav.classList.contains("show") ? "✕" : "☰";
-        }
-    }
+    const navMenu = document.querySelector('.nav-menu');
+    const hamburger = document.querySelector('.hamburger-menu');
+    
+    navMenu.classList.toggle('active');
+    
+    // Close menu when a nav item is clicked
+    const navItems = navMenu.querySelectorAll('button');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            navMenu.classList.remove('active');
+        });
+    });
 }
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    const navMenu = document.querySelector('.nav-menu');
+    const hamburger = document.querySelector('.hamburger-menu');
+    
+    if (!navMenu.contains(e.target) && !hamburger.contains(e.target) && navMenu.classList.contains('active')) {
+        navMenu.classList.remove('active');
+    }
+});
 
 function setupMobileMenu() {
     document.addEventListener('click', function(event) {
