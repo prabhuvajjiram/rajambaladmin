@@ -42,7 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if(mysqli_stmt_fetch($stmt)){
                     if(password_verify($password, $hashed_password)){
                         logDebug('Login successful for user: ' . $username);
-                        logDebug('Login successful for user: ' . $hashed_password);
                         
                         // Store session data
                         $_SESSION["loggedin"] = true;
@@ -53,7 +52,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         exit;
                     } else {
                         logDebug('Password verification failed for user: ' . $username);
-                        logDebug('Password verification failed for user: ' . $hashed_password);
                         $login_err = "Invalid username or password.";
                     }
                 }
