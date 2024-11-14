@@ -1,4 +1,10 @@
 <?php
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+error_log("Starting get_products.php");
+
 header('Content-Type: application/json');
 require_once 'db_config.php';
 
@@ -6,15 +12,16 @@ require_once 'db_config.php';
 $response = ['status' => 'error', 'message' => '', 'products' => []];
 
 try {
-    $query = "SELECT p.*, GROUP_CONCAT(c.color_name, ':', c.color_image_path SEPARATOR '|') as colors 
-              FROM products p 
-              LEFT JOIN colors c ON p.id = c.product_id 
-              GROUP BY p.id 
-              ORDER BY p.id DESC";
-              
+    error_log("Database connection status: " . ($conn ? "Connected" : "Failed"));
+    
+    // Start with the simplest query possible
+    $query = "SELECT * FROM products ORDER BY id DESC";
+    error_log("Executing query: " . $query);
+    
     $result = mysqli_query($conn, $query);
     
     if (!$result) {
+        error_log("MySQL Error: " . mysqli_error($conn));
         throw new Exception('Failed to fetch products: ' . mysqli_error($conn));
     }
     
@@ -30,41 +37,57 @@ try {
             'additional_images' => []
         ];
         
-        // Process colors if they exist
-        if (!empty($row['colors'])) {
-            $colorData = explode('|', $row['colors']);
-            foreach ($colorData as $color) {
-                if (strpos($color, ':') !== false) {
-                    list($colorName, $colorImage) = explode(':', $color);
-                    $product['colors'][] = [
-                        'name' => $colorName,
-                        'image_path' => formatImagePath($colorImage, 'colors')
-                    ];
+        // Try to get colors if they exist
+        try {
+            $colors_query = "SELECT color_name, color_image_path FROM colors WHERE product_id = ?";
+            $stmt = mysqli_prepare($conn, $colors_query);
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "i", $row['id']);
+                if (mysqli_stmt_execute($stmt)) {
+                    mysqli_stmt_bind_result($stmt, $color_name, $color_image_path);
+                    while (mysqli_stmt_fetch($stmt)) {
+                        $product['colors'][] = [
+                            'name' => $color_name,
+                            'image_path' => formatImagePath($color_image_path, 'colors')
+                        ];
+                    }
                 }
+                mysqli_stmt_close($stmt);
             }
+        } catch (Exception $e) {
+            error_log("Error fetching colors: " . $e->getMessage());
+            // Continue execution even if colors fetch fails
         }
-        
-        // Get additional images
-        $images_query = "SELECT image_path FROM product_images WHERE product_id = ? ORDER BY id ASC";
-        $stmt = mysqli_prepare($conn, $images_query);
-        mysqli_stmt_bind_param($stmt, "i", $row['id']);
-        
-        if (mysqli_stmt_execute($stmt)) {
-            $images_result = mysqli_stmt_get_result($stmt);
-            while ($image_row = mysqli_fetch_assoc($images_result)) {
-                $product['additional_images'][] = formatImagePath($image_row['image_path'], 'additional');
+
+        // Try to get additional images if they exist
+        try {
+            $images_query = "SELECT image_path FROM product_images WHERE product_id = ?";
+            $stmt = mysqli_prepare($conn, $images_query);
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, "i", $row['id']);
+                if (mysqli_stmt_execute($stmt)) {
+                    mysqli_stmt_bind_result($stmt, $additional_image_path);
+                    while (mysqli_stmt_fetch($stmt)) {
+                        $product['additional_images'][] = formatImagePath($additional_image_path, 'additional');
+                    }
+                }
+                mysqli_stmt_close($stmt);
             }
+        } catch (Exception $e) {
+            error_log("Error fetching additional images: " . $e->getMessage());
+            // Continue execution even if additional images fetch fails
         }
-        mysqli_stmt_close($stmt);
-        
+
         $products[] = $product;
     }
     
     $response['status'] = 'success';
     $response['products'] = $products;
+    error_log("Successfully fetched " . count($products) . " products");
     
 } catch (Exception $e) {
-    $response['message'] = $e->getMessage();
+    error_log("Critical error in get_products.php: " . $e->getMessage());
+    $response['message'] = "An error occurred while fetching products. Please try again later.";
 }
 
 // Function to ensure proper image path format
@@ -86,4 +109,5 @@ function formatImagePath($path, $type = 'products') {
 }
 
 mysqli_close($conn);
+error_log("Sending response: " . json_encode($response));
 echo json_encode($response);

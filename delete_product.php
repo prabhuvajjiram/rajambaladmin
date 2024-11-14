@@ -2,6 +2,11 @@
 header('Content-Type: application/json');
 require_once 'db_config.php';
 
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
@@ -19,9 +24,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "i", $product_id);
             mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
-            if ($row = mysqli_fetch_assoc($result)) {
-                $image_paths[] = $row['image_path'];
+            mysqli_stmt_bind_result($stmt, $image_path);
+            if (mysqli_stmt_fetch($stmt)) {
+                $image_paths[] = $image_path;
             }
             mysqli_stmt_close($stmt);
             
@@ -30,9 +35,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "i", $product_id);
             mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
-            while ($row = mysqli_fetch_assoc($result)) {
-                $image_paths[] = $row['image_path'];
+            mysqli_stmt_bind_result($stmt, $image_path);
+            while (mysqli_stmt_fetch($stmt)) {
+                $image_paths[] = $image_path;
             }
             mysqli_stmt_close($stmt);
             
@@ -41,9 +46,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = mysqli_prepare($conn, $sql);
             mysqli_stmt_bind_param($stmt, "i", $product_id);
             mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
-            while ($row = mysqli_fetch_assoc($result)) {
-                $image_paths[] = $row['color_image_path'];
+            mysqli_stmt_bind_result($stmt, $image_path);
+            while (mysqli_stmt_fetch($stmt)) {
+                $image_paths[] = $image_path;
             }
             mysqli_stmt_close($stmt);
             
@@ -70,8 +75,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             // Delete image files
             foreach ($image_paths as $path) {
-                if (!empty($path) && file_exists($path)) {
-                    unlink($path);
+                if (!empty($path)) {
+                    $full_path = $path; // Path already includes 'images/' prefix
+                    if (file_exists($full_path)) {
+                        unlink($full_path);
+                        error_log("Deleted file: " . $full_path);
+                    } else {
+                        error_log("File not found: " . $full_path);
+                    }
                 }
             }
             
@@ -80,7 +91,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
         } catch (Exception $e) {
             mysqli_rollback($conn);
-            echo json_encode(['success' => false, 'message' => 'Failed to delete product']);
+            error_log("Error deleting product: " . $e->getMessage());
+            echo json_encode(['success' => false, 'message' => 'Failed to delete product: ' . $e->getMessage()]);
         }
     } else {
         echo json_encode(['success' => false, 'message' => 'Invalid product ID']);

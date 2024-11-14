@@ -2,6 +2,11 @@
 header('Content-Type: application/json');
 require_once 'db_config.php';
 
+// Enable error reporting for debugging
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+error_reporting(E_ALL);
+
 // Function to ensure proper image path format
 function formatImagePath($path, $type = 'products') {
     if (empty($path)) return 'images/placeholder.jpg';
@@ -28,12 +33,8 @@ try {
 
     $product_id = intval($_GET['id']);
     
-    // Get product details
-    $product_query = "SELECT p.*, GROUP_CONCAT(c.color_name, ':', c.color_image_path SEPARATOR '|') as colors 
-                     FROM products p 
-                     LEFT JOIN colors c ON p.id = c.product_id 
-                     WHERE p.id = ? 
-                     GROUP BY p.id";
+    // Get product details - explicitly list all columns
+    $product_query = "SELECT id, title, description, price, image_path FROM products WHERE id = ?";
     
     $stmt = mysqli_prepare($conn, $product_query);
     if (!$stmt) {
@@ -46,64 +47,62 @@ try {
         throw new Exception('Failed to execute product statement: ' . mysqli_stmt_error($stmt));
     }
 
-    $result = mysqli_stmt_get_result($stmt);
-    if (!$result) {
-        throw new Exception('Failed to get product result: ' . mysqli_stmt_error($stmt));
-    }
-
-    if ($row = mysqli_fetch_assoc($result)) {
+    mysqli_stmt_bind_result($stmt, $id, $title, $description, $price, $image_path);
+    
+    if (mysqli_stmt_fetch($stmt)) {
         $product = [
-            'id' => $row['id'],
-            'title' => $row['title'],
-            'price' => $row['price'],
-            'description' => $row['description'],
-            'image_path' => formatImagePath($row['image_path'], 'products'),
+            'id' => $id,
+            'title' => $title,
+            'description' => $description,
+            'price' => $price,
+            'image_path' => formatImagePath($image_path),
             'colors' => [],
             'additional_images' => []
         ];
-
-        // Process colors
-        if (!empty($row['colors'])) {
-            $colorData = explode('|', $row['colors']);
-            foreach ($colorData as $color) {
-                list($colorName, $colorImage) = explode(':', $color);
-                $product['colors'][] = [
-                    'name' => $colorName,
-                    'image_path' => formatImagePath($colorImage, 'colors')
-                ];
-            }
-        }
-
-        mysqli_stmt_close($stmt);
-
-        // Get additional images in a separate query
-        $images_query = "SELECT image_path FROM product_images WHERE product_id = ? ORDER BY id ASC";
-        $images_stmt = mysqli_prepare($conn, $images_query);
         
-        if ($images_stmt) {
-            mysqli_stmt_bind_param($images_stmt, "i", $product_id);
-            
-            if (mysqli_stmt_execute($images_stmt)) {
-                $images_result = mysqli_stmt_get_result($images_stmt);
-                while ($image_row = mysqli_fetch_assoc($images_result)) {
-                    $product['additional_images'][] = formatImagePath($image_row['image_path'], 'additional');
+        mysqli_stmt_close($stmt);
+        
+        // Get colors
+        $colors_query = "SELECT color_name, color_image_path FROM colors WHERE product_id = ?";
+        $stmt = mysqli_prepare($conn, $colors_query);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "i", $product_id);
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_bind_result($stmt, $color_name, $color_image_path);
+                while (mysqli_stmt_fetch($stmt)) {
+                    $product['colors'][] = [
+                        'name' => $color_name,
+                        'image_path' => formatImagePath($color_image_path, 'colors')
+                    ];
                 }
             }
-            mysqli_stmt_close($images_stmt);
+            mysqli_stmt_close($stmt);
         }
-
+        
+        // Get additional images
+        $images_query = "SELECT image_path FROM product_images WHERE product_id = ?";
+        $stmt = mysqli_prepare($conn, $images_query);
+        if ($stmt) {
+            mysqli_stmt_bind_param($stmt, "i", $product_id);
+            if (mysqli_stmt_execute($stmt)) {
+                mysqli_stmt_bind_result($stmt, $additional_image_path);
+                while (mysqli_stmt_fetch($stmt)) {
+                    $product['additional_images'][] = formatImagePath($additional_image_path, 'additional');
+                }
+            }
+            mysqli_stmt_close($stmt);
+        }
+        
         $response['success'] = true;
         $response['product'] = $product;
     } else {
         throw new Exception('Product not found');
     }
+    
 } catch (Exception $e) {
     $response['message'] = $e->getMessage();
+    error_log("Error in get_product.php: " . $e->getMessage());
 }
 
 mysqli_close($conn);
-// Ensure clean output
-ob_clean();
 echo json_encode($response);
-exit;
-?>

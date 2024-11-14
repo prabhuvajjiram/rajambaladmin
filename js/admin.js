@@ -76,7 +76,13 @@ function refreshProducts() {
     
     productList.innerHTML = '<tr><td colspan="5">Loading products...</td></tr>';
 
-    fetch('get_products.php')
+    // Add cache-busting timestamp
+    fetch('get_products.php?t=' + new Date().getTime(), {
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        }
+    })
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
@@ -370,6 +376,8 @@ function deleteProduct(productId) {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
         },
         body: JSON.stringify({ product_id: productId })
     })
@@ -377,6 +385,7 @@ function deleteProduct(productId) {
     .then(data => {
         if (data.success) {
             refreshProducts();
+            alert('Product deleted successfully');
         } else {
             alert('Error deleting product: ' + data.message);
         }
@@ -546,8 +555,15 @@ function setupRemoveHandlers() {
 }
 
 function updateProduct(formData) {
+    // Add cache-busting to formData
+    formData.append('t', new Date().getTime());
+    
     fetch('update_product.php', {
         method: 'POST',
+        headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+        },
         body: formData
     })
     .then(response => response.json())
