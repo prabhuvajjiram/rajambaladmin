@@ -1,0 +1,853 @@
+2024-11-15 00:31:52 - === Starting Product Upload ===
+2024-11-15 00:31:52 - POST Data:
+Array
+(
+    [title] => 1product
+    [price] => 222
+    [description] => ewr
+)
+
+2024-11-15 00:31:52 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => 1.jpg
+            [full_path] => 1.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php3E74.tmp
+            [error] => 0
+            [size] => 56799
+        )
+
+)
+
+2024-11-15 00:31:52 - Database connection successful
+2024-11-15 00:31:52 - Started database transaction
+2024-11-15 00:31:52 - Processing primary image
+2024-11-15 00:31:52 - Primary image extension: jpg
+2024-11-15 00:31:52 - Saving primary image to: images/products/67368868302f2_primary.jpg
+2024-11-15 00:31:52 - Primary image processed successfully
+2024-11-15 00:31:52 - Inserting product into database
+2024-11-15 00:31:52 - Executing product insert with params:
+Array
+(
+    [title] => 1product
+    [price] => 222
+    [description] => ewr
+    [image_path] => images/products/67368868302f2_primary.jpg
+)
+
+2024-11-15 00:31:52 - Product inserted successfully with ID: 66
+2024-11-15 00:31:52 - === Processing Additional Images ===
+2024-11-15 00:31:52 - Additional Images Data:
+No additional images
+2024-11-15 00:31:52 - === Processing Colors ===
+2024-11-15 00:31:52 - Color Names:
+No color names
+2024-11-15 00:31:52 - Color Images:
+No color images
+2024-11-15 00:31:52 - === Product Upload Completed Successfully ===
+2024-11-15 00:31:52 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 66
+            [title] => 1product
+            [price] => 222
+            [image_path] => images/products/67368868302f2_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-15 00:31:52
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-15 00:32:18 - === Starting Product Upload ===
+2024-11-15 00:32:18 - POST Data:
+Array
+(
+    [title] => 2images
+    [price] => 100
+    [description] => edf
+)
+
+2024-11-15 00:32:18 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => 2.jpg
+            [full_path] => 2.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpA443.tmp
+            [error] => 0
+            [size] => 53682
+        )
+
+    [additional_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => 3.jpg
+                )
+
+            [full_path] => Array
+                (
+                    [0] => 3.jpg
+                )
+
+            [type] => Array
+                (
+                    [0] => image/jpeg
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\phpA444.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 48478
+                )
+
+        )
+
+)
+
+2024-11-15 00:32:18 - Database connection successful
+2024-11-15 00:32:18 - Started database transaction
+2024-11-15 00:32:18 - Processing primary image
+2024-11-15 00:32:18 - Primary image extension: jpg
+2024-11-15 00:32:18 - Saving primary image to: images/products/6736888242b46_primary.jpg
+2024-11-15 00:32:18 - Primary image processed successfully
+2024-11-15 00:32:18 - Inserting product into database
+2024-11-15 00:32:18 - Executing product insert with params:
+Array
+(
+    [title] => 2images
+    [price] => 100
+    [description] => edf
+    [image_path] => images/products/6736888242b46_primary.jpg
+)
+
+2024-11-15 00:32:18 - Product inserted successfully with ID: 67
+2024-11-15 00:32:18 - === Processing Additional Images ===
+2024-11-15 00:32:18 - Additional Images Data:
+Array
+(
+    [name] => Array
+        (
+            [0] => 3.jpg
+        )
+
+    [full_path] => Array
+        (
+            [0] => 3.jpg
+        )
+
+    [type] => Array
+        (
+            [0] => image/jpeg
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\phpA444.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 48478
+        )
+
+)
+
+2024-11-15 00:32:18 - Processing additional image 0
+2024-11-15 00:32:18 - Additional image 0 extension: jpg
+2024-11-15 00:32:18 - Saving additional image to: images/additional/6736888267157_additional.jpg
+2024-11-15 00:32:18 - Executing additional image insert for image 0
+2024-11-15 00:32:18 - Additional image 0 processed and saved successfully
+2024-11-15 00:32:18 - === Processing Colors ===
+2024-11-15 00:32:18 - Color Names:
+No color names
+2024-11-15 00:32:18 - Color Images:
+No color images
+2024-11-15 00:32:18 - === Product Upload Completed Successfully ===
+2024-11-15 00:32:18 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 67
+            [title] => 2images
+            [price] => 100
+            [image_path] => images/products/6736888242b46_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-15 00:32:18
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-15 00:32:42 - === Starting Product Upload ===
+2024-11-15 00:32:42 - POST Data:
+Array
+(
+    [title] => mulitple
+    [price] => 2314
+    [description] => dsfsd
+)
+
+2024-11-15 00:32:42 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => 4.jpg
+            [full_path] => 4.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php438.tmp
+            [error] => 0
+            [size] => 76075
+        )
+
+    [additional_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => 5.jpg
+                    [1] => 6.jpg
+                    [2] => 7.jpg
+                )
+
+            [full_path] => Array
+                (
+                    [0] => 5.jpg
+                    [1] => 6.jpg
+                    [2] => 7.jpg
+                )
+
+            [type] => Array
+                (
+                    [0] => image/jpeg
+                    [1] => image/jpeg
+                    [2] => image/jpeg
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php439.tmp
+                    [1] => C:\xampp\tmp\php43A.tmp
+                    [2] => C:\xampp\tmp\php43B.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                    [1] => 0
+                    [2] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 96313
+                    [1] => 112376
+                    [2] => 95221
+                )
+
+        )
+
+)
+
+2024-11-15 00:32:42 - Database connection successful
+2024-11-15 00:32:42 - Started database transaction
+2024-11-15 00:32:42 - Processing primary image
+2024-11-15 00:32:42 - Primary image extension: jpg
+2024-11-15 00:32:42 - Saving primary image to: images/products/6736889acfb02_primary.jpg
+2024-11-15 00:32:43 - Primary image processed successfully
+2024-11-15 00:32:43 - Inserting product into database
+2024-11-15 00:32:43 - Executing product insert with params:
+Array
+(
+    [title] => mulitple
+    [price] => 2314
+    [description] => dsfsd
+    [image_path] => images/products/6736889acfb02_primary.jpg
+)
+
+2024-11-15 00:32:43 - Product inserted successfully with ID: 68
+2024-11-15 00:32:43 - === Processing Additional Images ===
+2024-11-15 00:32:43 - Additional Images Data:
+Array
+(
+    [name] => Array
+        (
+            [0] => 5.jpg
+            [1] => 6.jpg
+            [2] => 7.jpg
+        )
+
+    [full_path] => Array
+        (
+            [0] => 5.jpg
+            [1] => 6.jpg
+            [2] => 7.jpg
+        )
+
+    [type] => Array
+        (
+            [0] => image/jpeg
+            [1] => image/jpeg
+            [2] => image/jpeg
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php439.tmp
+            [1] => C:\xampp\tmp\php43A.tmp
+            [2] => C:\xampp\tmp\php43B.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+            [1] => 0
+            [2] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 96313
+            [1] => 112376
+            [2] => 95221
+        )
+
+)
+
+2024-11-15 00:32:43 - Processing additional image 0
+2024-11-15 00:32:43 - Additional image 0 extension: jpg
+2024-11-15 00:32:43 - Saving additional image to: images/additional/6736889b0ab4a_additional.jpg
+2024-11-15 00:32:43 - Executing additional image insert for image 0
+2024-11-15 00:32:43 - Additional image 0 processed and saved successfully
+2024-11-15 00:32:43 - Processing additional image 1
+2024-11-15 00:32:43 - Additional image 1 extension: jpg
+2024-11-15 00:32:43 - Saving additional image to: images/additional/6736889b35327_additional.jpg
+2024-11-15 00:32:43 - Executing additional image insert for image 1
+2024-11-15 00:32:43 - Additional image 1 processed and saved successfully
+2024-11-15 00:32:43 - Processing additional image 2
+2024-11-15 00:32:43 - Additional image 2 extension: jpg
+2024-11-15 00:32:43 - Saving additional image to: images/additional/6736889b57172_additional.jpg
+2024-11-15 00:32:43 - Executing additional image insert for image 2
+2024-11-15 00:32:43 - Additional image 2 processed and saved successfully
+2024-11-15 00:32:43 - === Processing Colors ===
+2024-11-15 00:32:43 - Color Names:
+No color names
+2024-11-15 00:32:43 - Color Images:
+No color images
+2024-11-15 00:32:43 - === Product Upload Completed Successfully ===
+2024-11-15 00:32:43 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 68
+            [title] => mulitple
+            [price] => 2314
+            [image_path] => images/products/6736889acfb02_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-15 00:32:42
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-15 00:33:08 - === Starting Product Upload ===
+2024-11-15 00:33:08 - POST Data:
+Array
+(
+    [title] => imagewith color
+    [price] => 24324
+    [description] => dsfsd
+    [color_names] => Array
+        (
+            [0] => red
+        )
+
+)
+
+2024-11-15 00:33:08 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => 10.jpg
+            [full_path] => 10.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php6A0A.tmp
+            [error] => 0
+            [size] => 115062
+        )
+
+    [color_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => 11.jpg
+                )
+
+            [full_path] => Array
+                (
+                    [0] => 11.jpg
+                )
+
+            [type] => Array
+                (
+                    [0] => image/jpeg
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php6A0B.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 82597
+                )
+
+        )
+
+)
+
+2024-11-15 00:33:08 - Database connection successful
+2024-11-15 00:33:08 - Started database transaction
+2024-11-15 00:33:08 - Processing primary image
+2024-11-15 00:33:08 - Primary image extension: jpg
+2024-11-15 00:33:08 - Saving primary image to: images/products/673688b4dc0ee_primary.jpg
+2024-11-15 00:33:09 - Primary image processed successfully
+2024-11-15 00:33:09 - Inserting product into database
+2024-11-15 00:33:09 - Executing product insert with params:
+Array
+(
+    [title] => imagewith color
+    [price] => 24324
+    [description] => dsfsd
+    [image_path] => images/products/673688b4dc0ee_primary.jpg
+)
+
+2024-11-15 00:33:09 - Product inserted successfully with ID: 69
+2024-11-15 00:33:09 - === Processing Additional Images ===
+2024-11-15 00:33:09 - Additional Images Data:
+No additional images
+2024-11-15 00:33:09 - === Processing Colors ===
+2024-11-15 00:33:09 - Color Names:
+Array
+(
+    [0] => red
+)
+
+2024-11-15 00:33:09 - Color Images:
+Array
+(
+    [name] => Array
+        (
+            [0] => 11.jpg
+        )
+
+    [full_path] => Array
+        (
+            [0] => 11.jpg
+        )
+
+    [type] => Array
+        (
+            [0] => image/jpeg
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php6A0B.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 82597
+        )
+
+)
+
+2024-11-15 00:33:09 - Processing color 0: red
+2024-11-15 00:33:09 - Color image 0 extension: jpg
+2024-11-15 00:33:09 - Saving color image to: images/colors/673688b51b886_color.jpg
+2024-11-15 00:33:09 - Executing color insert for color: red with path: images/colors/673688b51b886_color.jpg
+2024-11-15 00:33:09 - Color 0 (red) processed and saved successfully
+2024-11-15 00:33:09 - === Product Upload Completed Successfully ===
+2024-11-15 00:33:09 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 69
+            [title] => imagewith color
+            [price] => 24324
+            [image_path] => images/products/673688b4dc0ee_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-15 00:33:08
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-15 00:34:03 - === Starting Product Upload ===
+2024-11-15 00:34:03 - POST Data:
+Array
+(
+    [title] => multimageandcolor
+    [price] => 100
+    [description] => esdf
+    [color_names] => Array
+        (
+            [0] => red
+            [1] => orange
+        )
+
+)
+
+2024-11-15 00:34:03 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => 18.jpg
+            [full_path] => 18.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php3F7D.tmp
+            [error] => 0
+            [size] => 142898
+        )
+
+    [additional_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => 19.jpg
+                    [1] => 20.jpg
+                )
+
+            [full_path] => Array
+                (
+                    [0] => 19.jpg
+                    [1] => 20.jpg
+                )
+
+            [type] => Array
+                (
+                    [0] => image/jpeg
+                    [1] => image/jpeg
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php3F7E.tmp
+                    [1] => C:\xampp\tmp\php3F7F.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                    [1] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 152607
+                    [1] => 147117
+                )
+
+        )
+
+    [color_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => 21.jpg
+                    [1] => 20.jpg
+                )
+
+            [full_path] => Array
+                (
+                    [0] => 21.jpg
+                    [1] => 20.jpg
+                )
+
+            [type] => Array
+                (
+                    [0] => image/jpeg
+                    [1] => image/jpeg
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php3F80.tmp
+                    [1] => C:\xampp\tmp\php3F81.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                    [1] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 83095
+                    [1] => 147117
+                )
+
+        )
+
+)
+
+2024-11-15 00:34:03 - Database connection successful
+2024-11-15 00:34:03 - Started database transaction
+2024-11-15 00:34:03 - Processing primary image
+2024-11-15 00:34:03 - Primary image extension: jpg
+2024-11-15 00:34:03 - Saving primary image to: images/products/673688eb85e6f_primary.jpg
+2024-11-15 00:34:03 - Primary image processed successfully
+2024-11-15 00:34:03 - Inserting product into database
+2024-11-15 00:34:03 - Executing product insert with params:
+Array
+(
+    [title] => multimageandcolor
+    [price] => 100
+    [description] => esdf
+    [image_path] => images/products/673688eb85e6f_primary.jpg
+)
+
+2024-11-15 00:34:03 - Product inserted successfully with ID: 70
+2024-11-15 00:34:03 - === Processing Additional Images ===
+2024-11-15 00:34:03 - Additional Images Data:
+Array
+(
+    [name] => Array
+        (
+            [0] => 19.jpg
+            [1] => 20.jpg
+        )
+
+    [full_path] => Array
+        (
+            [0] => 19.jpg
+            [1] => 20.jpg
+        )
+
+    [type] => Array
+        (
+            [0] => image/jpeg
+            [1] => image/jpeg
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php3F7E.tmp
+            [1] => C:\xampp\tmp\php3F7F.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+            [1] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 152607
+            [1] => 147117
+        )
+
+)
+
+2024-11-15 00:34:03 - Processing additional image 0
+2024-11-15 00:34:03 - Additional image 0 extension: jpg
+2024-11-15 00:34:03 - Saving additional image to: images/additional/673688ebbaa3c_additional.jpg
+2024-11-15 00:34:03 - Executing additional image insert for image 0
+2024-11-15 00:34:03 - Additional image 0 processed and saved successfully
+2024-11-15 00:34:03 - Processing additional image 1
+2024-11-15 00:34:03 - Additional image 1 extension: jpg
+2024-11-15 00:34:03 - Saving additional image to: images/additional/673688ebe282c_additional.jpg
+2024-11-15 00:34:04 - Executing additional image insert for image 1
+2024-11-15 00:34:04 - Additional image 1 processed and saved successfully
+2024-11-15 00:34:04 - === Processing Colors ===
+2024-11-15 00:34:04 - Color Names:
+Array
+(
+    [0] => red
+    [1] => orange
+)
+
+2024-11-15 00:34:04 - Color Images:
+Array
+(
+    [name] => Array
+        (
+            [0] => 21.jpg
+            [1] => 20.jpg
+        )
+
+    [full_path] => Array
+        (
+            [0] => 21.jpg
+            [1] => 20.jpg
+        )
+
+    [type] => Array
+        (
+            [0] => image/jpeg
+            [1] => image/jpeg
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php3F80.tmp
+            [1] => C:\xampp\tmp\php3F81.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+            [1] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 83095
+            [1] => 147117
+        )
+
+)
+
+2024-11-15 00:34:04 - Processing color 0: red
+2024-11-15 00:34:04 - Color image 0 extension: jpg
+2024-11-15 00:34:04 - Saving color image to: images/colors/673688ec11309_color.jpg
+2024-11-15 00:34:04 - Executing color insert for color: red with path: images/colors/673688ec11309_color.jpg
+2024-11-15 00:34:04 - Color 0 (red) processed and saved successfully
+2024-11-15 00:34:04 - Processing color 1: orange
+2024-11-15 00:34:04 - Color image 1 extension: jpg
+2024-11-15 00:34:04 - Saving color image to: images/colors/673688ec408d9_color.jpg
+2024-11-15 00:34:04 - Executing color insert for color: orange with path: images/colors/673688ec408d9_color.jpg
+2024-11-15 00:34:04 - Color 1 (orange) processed and saved successfully
+2024-11-15 00:34:04 - === Product Upload Completed Successfully ===
+2024-11-15 00:34:04 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 70
+            [title] => multimageandcolor
+            [price] => 100
+            [image_path] => images/products/673688eb85e6f_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-15 00:34:03
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+

@@ -169,9 +169,14 @@ function setupImagePreview(productCard, product) {
         .then(response => response.json())
         .then(data => {
             if (data.success && data.product) {
+                // Initialize allImages with the primary image
                 const allImages = [product.image_path];
-                if (data.product.additional_images && data.product.additional_images.length > 0) {
-                    allImages.push(...data.product.additional_images);
+                
+                // Add additional images if they exist
+                if (Array.isArray(data.product.additional_images)) {
+                    // Map the additional images to their paths
+                    const additionalImagePaths = data.product.additional_images.map(img => img.path);
+                    allImages.push(...additionalImagePaths);
                 }
 
                 const mainImage = productCard.querySelector('.main-product-image');
@@ -192,7 +197,13 @@ function setupImagePreview(productCard, product) {
                 let touchEndX = 0;
 
                 function updateImage() {
-                    mainImage.src = allImages[currentImageIndex];
+                    if (mainImage && allImages[currentImageIndex]) {
+                        const newSrc = allImages[currentImageIndex];
+                        // Only update if the source has changed
+                        if (mainImage.src !== newSrc) {
+                            mainImage.src = newSrc;
+                        }
+                    }
                 }
 
                 function handleSwipe() {
@@ -210,6 +221,9 @@ function setupImagePreview(productCard, product) {
                         updateImage();
                     }
                 }
+
+                // Set initial image
+                updateImage();
 
                 if (imageContainer && allImages.length > 1) {
                     // Touch events for mobile swipe
@@ -244,8 +258,11 @@ function setupImagePreview(productCard, product) {
             }
         })
         .catch(error => {
+            console.error('Error fetching product details:', error);
             const navigation = productCard.querySelector('.image-navigation');
-            navigation.style.display = 'none';
+            if (navigation) {
+                navigation.style.display = 'none';
+            }
         });
 }
 
