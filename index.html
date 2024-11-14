@@ -99,6 +99,7 @@
     
     <!-- Load main CSS -->
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/image-slider.css">
     
     <!-- Defer non-critical CSS -->
     <link rel="preload" href="https://fonts.googleapis.com/icon?family=Material+Icons" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -167,16 +168,18 @@
     <div class="cart-menu">
         <div class="cart-header">
             <h2>Your Cart</h2>
-            <button class="close-cart">&times;</button>
+            <button class="close-cart" aria-label="Close cart">&times;</button>
         </div>
         <div class="cart-items">
             <!-- Cart items will be dynamically added here -->
         </div>
         <div class="cart-total">
             <span>Total:</span>
-            <span class="total-amount">₹0</span>
+            <span class="total-amount">₹0.00</span>
         </div>
-        <a href="checkout.html" id="checkoutButton" class="btn btn-primary">Proceed to Checkout</a>
+        <button class="checkout-btn" id="checkoutButton">
+            Proceed to Checkout
+        </button>
     </div>
 
     <main>
@@ -196,6 +199,15 @@
                 </div>
                 <div class="more-products-button">
                     <button id="moreProductsBtn" class="btn btn-primary">More Products</button>
+                </div>
+                <div class="product-details">
+                    <div id="productImageSlider" class="product-image-container"></div>
+                    <div class="product-info">
+                        <h2 class="product-title"></h2>
+                        <p class="product-description"></p>
+                        <p class="product-price"></p>
+                        <div class="color-options"></div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -286,11 +298,12 @@
 
     <div id="imageModal" class="modal">
         <span class="close">&times;</span>
-        <img class="modal-content" id="enlargedImage">
-        <div id="imageCaption"></div>
+        <img class="modal-content" id="modalImage">
+        <div id="imageCaption" class="modal-caption"></div>
     </div>
 
     <script src="js/main_updated.js" defer></script>
     <script src="js/checkout.js" defer></script>
+    <script src="js/image-slider.js" defer></script>
 </body>
 </html>
