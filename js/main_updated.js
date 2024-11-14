@@ -231,8 +231,9 @@ function addToCart(product, colorName = null, currentImage = null) {
     localStorage.setItem('cart', JSON.stringify(cart));
     console.log('Updated cart in localStorage:', cart);
     
-    // Update cart count
-    updateCartCount();
+    // Ensure cart button is visible and update UI
+    ensureCartButtonVisibility();
+    updateCartUI();
     
     // Show success message
     showNotification('Product added to cart!');
@@ -483,6 +484,14 @@ function setupCheckoutButton() {
     }
 }
 
+function ensureCartButtonVisibility() {
+    const cartToggle = document.querySelector('.cart-toggle');
+    if (cartToggle) {
+        cartToggle.style.display = 'flex';
+        updateCartCount();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM fully loaded and parsed');
     
@@ -516,7 +525,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (targetElement) {
                         setTimeout(() => {
                             targetElement.scrollIntoView({ behavior: 'smooth' });
-                        }, 300); // Delay to allow menu to close
+                            ensureCartButtonVisibility();
+                        }, 300);
                     }
                 } else {
                     // For external links, just close the menu
@@ -531,6 +541,23 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     } else {
         console.error('Menu toggle or main nav not found');
+    }
+
+    // Initial cart setup
+    ensureCartButtonVisibility();
+    
+    // Add cart toggle functionality
+    const cartToggle = document.querySelector('.cart-toggle');
+    if (cartToggle) {
+        cartToggle.addEventListener('click', toggleCartMenu);
+        console.log('Cart toggle listener added');
+    }
+    
+    // Add close cart button functionality
+    const closeCartBtn = document.querySelector('.close-cart');
+    if (closeCartBtn) {
+        closeCartBtn.addEventListener('click', toggleCartMenu);
+        console.log('Close cart button listener added');
     }
 
     fetchProducts();
@@ -559,20 +586,6 @@ document.addEventListener('DOMContentLoaded', function() {
         productForm.addEventListener('submit', submitProductForm);
     } else {
         console.log('Product form not found on this page');
-    }
-    
-    // Add cart toggle functionality
-    const cartToggle = document.querySelector('.cart-toggle');
-    if (cartToggle) {
-        cartToggle.addEventListener('click', toggleCartMenu);
-        console.log('Cart toggle listener added');
-    }
-    
-    // Add close cart button functionality
-    const closeCartBtn = document.querySelector('.close-cart');
-    if (closeCartBtn) {
-        closeCartBtn.addEventListener('click', toggleCartMenu);
-        console.log('Close cart button listener added');
     }
     
     // Setup checkout button

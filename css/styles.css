@@ -2184,3 +2184,39 @@ body {
         text-align: center;
     }
 }
+
+@media (max-width: 768px) {
+    /* Cart button mobile styles */
+    .cart-toggle {
+        display: flex;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #BE3A8E;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 998;
+    }
+
+    .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: #fff;
+        color: #BE3A8E;
+        border: 2px solid #BE3A8E;
+        min-width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 12px;
+        font-weight: bold;
+    }
+}
