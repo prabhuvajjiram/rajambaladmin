@@ -1598,3 +1598,1088 @@ Array
 
 )
 
+2024-11-14 00:18:50 - === Starting Product Upload ===
+2024-11-14 00:18:50 - POST Data:
+Array
+(
+    [title] => testmoreiamges
+    [price] => 12312
+    [description] => 24eq3we
+    [color_names] => Array
+        (
+            [0] => red
+        )
+
+)
+
+2024-11-14 00:18:50 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => Saree_50.jpg
+            [full_path] => Saree_50.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpDB63.tmp
+            [error] => 0
+            [size] => 64310
+        )
+
+    [additional_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => map-placeholder_63.jpg
+                    [1] => hero-bg_50.jpg
+                    [2] => gemini.png
+                )
+
+            [full_path] => Array
+                (
+                    [0] => map-placeholder_63.jpg
+                    [1] => hero-bg_50.jpg
+                    [2] => gemini.png
+                )
+
+            [type] => Array
+                (
+                    [0] => image/jpeg
+                    [1] => image/jpeg
+                    [2] => image/png
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\phpDB73.tmp
+                    [1] => C:\xampp\tmp\phpDB74.tmp
+                    [2] => C:\xampp\tmp\phpDB75.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                    [1] => 0
+                    [2] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 139595
+                    [1] => 170172
+                    [2] => 12850
+                )
+
+        )
+
+    [color_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => Screenshot 2024-10-12 153039.png
+                )
+
+            [full_path] => Array
+                (
+                    [0] => Screenshot 2024-10-12 153039.png
+                )
+
+            [type] => Array
+                (
+                    [0] => image/png
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\phpDB76.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 56600
+                )
+
+        )
+
+)
+
+2024-11-14 00:18:50 - Database connection successful
+2024-11-14 00:18:50 - Started database transaction
+2024-11-14 00:18:50 - Processing primary image
+2024-11-14 00:18:50 - Primary image extension: jpg
+2024-11-14 00:18:50 - Saving primary image to: images/products/673533da7b6a0_primary.jpg
+2024-11-14 00:18:50 - Primary image processed successfully
+2024-11-14 00:18:50 - Inserting product into database
+2024-11-14 00:18:50 - Executing product insert with params:
+Array
+(
+    [title] => testmoreiamges
+    [price] => 12312
+    [description] => 24eq3we
+    [image_path] => images/products/673533da7b6a0_primary.jpg
+)
+
+2024-11-14 00:18:50 - Product inserted successfully with ID: 57
+2024-11-14 00:18:50 - === Processing Additional Images ===
+2024-11-14 00:18:50 - Additional Images Data:
+Array
+(
+    [name] => Array
+        (
+            [0] => map-placeholder_63.jpg
+            [1] => hero-bg_50.jpg
+            [2] => gemini.png
+        )
+
+    [full_path] => Array
+        (
+            [0] => map-placeholder_63.jpg
+            [1] => hero-bg_50.jpg
+            [2] => gemini.png
+        )
+
+    [type] => Array
+        (
+            [0] => image/jpeg
+            [1] => image/jpeg
+            [2] => image/png
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\phpDB73.tmp
+            [1] => C:\xampp\tmp\phpDB74.tmp
+            [2] => C:\xampp\tmp\phpDB75.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+            [1] => 0
+            [2] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 139595
+            [1] => 170172
+            [2] => 12850
+        )
+
+)
+
+2024-11-14 00:18:50 - Processing additional image 0
+2024-11-14 00:18:50 - Additional image 0 extension: jpg
+2024-11-14 00:18:50 - Saving additional image to: images/additional/673533daa0b90_additional.jpg
+2024-11-14 00:18:50 - Executing additional image insert for image 0
+2024-11-14 00:18:50 - Additional image 0 processed and saved successfully
+2024-11-14 00:18:50 - Processing additional image 1
+2024-11-14 00:18:50 - Additional image 1 extension: jpg
+2024-11-14 00:18:50 - Saving additional image to: images/additional/673533dacd0b3_additional.jpg
+2024-11-14 00:18:51 - Executing additional image insert for image 1
+2024-11-14 00:18:51 - Additional image 1 processed and saved successfully
+2024-11-14 00:18:51 - Processing additional image 2
+2024-11-14 00:18:51 - Additional image 2 extension: png
+2024-11-14 00:18:51 - Saving additional image to: images/additional/673533db01a4e_additional.png
+2024-11-14 00:18:51 - Executing additional image insert for image 2
+2024-11-14 00:18:51 - Additional image 2 processed and saved successfully
+2024-11-14 00:18:51 - === Processing Colors ===
+2024-11-14 00:18:51 - Color Names:
+Array
+(
+    [0] => red
+)
+
+2024-11-14 00:18:51 - Color Images:
+Array
+(
+    [name] => Array
+        (
+            [0] => Screenshot 2024-10-12 153039.png
+        )
+
+    [full_path] => Array
+        (
+            [0] => Screenshot 2024-10-12 153039.png
+        )
+
+    [type] => Array
+        (
+            [0] => image/png
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\phpDB76.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 56600
+        )
+
+)
+
+2024-11-14 00:18:51 - Processing color 0: red
+2024-11-14 00:18:51 - Color image 0 extension: png
+2024-11-14 00:18:51 - Saving color image to: images/colors/673533db3585a_color.png
+2024-11-14 00:18:51 - Executing color insert for color: red with path: images/colors/673533db3585a_color.png
+2024-11-14 00:18:51 - Color 0 (red) processed and saved successfully
+2024-11-14 00:18:51 - === Product Upload Completed Successfully ===
+2024-11-14 00:18:51 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 57
+            [title] => testmoreiamges
+            [price] => 12312
+            [image_path] => images/products/673533da7b6a0_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-14 00:18:50
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-14 00:46:28 - === Starting Product Upload ===
+2024-11-14 00:46:28 - POST Data:
+Array
+(
+    [title] => test1
+    [price] => 12312
+    [description] => test
+)
+
+2024-11-14 00:46:28 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => map-placeholder_63.jpg
+            [full_path] => map-placeholder_63.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php26B0.tmp
+            [error] => 0
+            [size] => 139595
+        )
+
+)
+
+2024-11-14 00:46:28 - Database connection successful
+2024-11-14 00:46:28 - Started database transaction
+2024-11-14 00:46:28 - Processing primary image
+2024-11-14 00:46:28 - Primary image extension: jpg
+2024-11-14 00:46:28 - Saving primary image to: images/products/67353a542c3f7_primary.jpg
+2024-11-14 00:46:28 - Primary image processed successfully
+2024-11-14 00:46:28 - Inserting product into database
+2024-11-14 00:46:28 - Executing product insert with params:
+Array
+(
+    [title] => test1
+    [price] => 12312
+    [description] => test
+    [image_path] => images/products/67353a542c3f7_primary.jpg
+)
+
+2024-11-14 00:46:28 - Product inserted successfully with ID: 58
+2024-11-14 00:46:28 - === Processing Additional Images ===
+2024-11-14 00:46:28 - Additional Images Data:
+No additional images
+2024-11-14 00:46:28 - === Processing Colors ===
+2024-11-14 00:46:28 - Color Names:
+No color names
+2024-11-14 00:46:28 - Color Images:
+No color images
+2024-11-14 00:46:28 - === Product Upload Completed Successfully ===
+2024-11-14 00:46:28 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 58
+            [title] => test1
+            [price] => 12312
+            [image_path] => images/products/67353a542c3f7_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-14 00:46:28
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-14 00:47:07 - === Starting Product Upload ===
+2024-11-14 00:47:07 - POST Data:
+Array
+(
+    [title] => test2with1add
+    [price] => 100
+    [description] => 100
+)
+
+2024-11-14 00:47:07 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => hero-bg_50.jpg
+            [full_path] => hero-bg_50.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpC1E7.tmp
+            [error] => 0
+            [size] => 170172
+        )
+
+    [additional_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => gemini.png
+                )
+
+            [full_path] => Array
+                (
+                    [0] => gemini.png
+                )
+
+            [type] => Array
+                (
+                    [0] => image/png
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\phpC1E8.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 12850
+                )
+
+        )
+
+)
+
+2024-11-14 00:47:07 - Database connection successful
+2024-11-14 00:47:07 - Started database transaction
+2024-11-14 00:47:07 - Processing primary image
+2024-11-14 00:47:07 - Primary image extension: jpg
+2024-11-14 00:47:07 - Saving primary image to: images/products/67353a7bd9cca_primary.jpg
+2024-11-14 00:47:07 - Primary image processed successfully
+2024-11-14 00:47:07 - Inserting product into database
+2024-11-14 00:47:07 - Executing product insert with params:
+Array
+(
+    [title] => test2with1add
+    [price] => 100
+    [description] => 100
+    [image_path] => images/products/67353a7bd9cca_primary.jpg
+)
+
+2024-11-14 00:47:07 - Product inserted successfully with ID: 59
+2024-11-14 00:47:07 - === Processing Additional Images ===
+2024-11-14 00:47:07 - Additional Images Data:
+Array
+(
+    [name] => Array
+        (
+            [0] => gemini.png
+        )
+
+    [full_path] => Array
+        (
+            [0] => gemini.png
+        )
+
+    [type] => Array
+        (
+            [0] => image/png
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\phpC1E8.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 12850
+        )
+
+)
+
+2024-11-14 00:47:07 - Processing additional image 0
+2024-11-14 00:47:07 - Additional image 0 extension: png
+2024-11-14 00:47:07 - Saving additional image to: images/additional/67353a7be8523_additional.png
+2024-11-14 00:47:08 - Executing additional image insert for image 0
+2024-11-14 00:47:08 - Additional image 0 processed and saved successfully
+2024-11-14 00:47:08 - === Processing Colors ===
+2024-11-14 00:47:08 - Color Names:
+No color names
+2024-11-14 00:47:08 - Color Images:
+No color images
+2024-11-14 00:47:08 - === Product Upload Completed Successfully ===
+2024-11-14 00:47:08 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 59
+            [title] => test2with1add
+            [price] => 100
+            [image_path] => images/products/67353a7bd9cca_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-14 00:47:07
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-14 00:47:50 - === Starting Product Upload ===
+2024-11-14 00:47:50 - POST Data:
+Array
+(
+    [title] => test3withmoreadd
+    [price] => 1100
+    [description] => 2e3
+)
+
+2024-11-14 00:47:50 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => map-placeholder_63.jpg
+            [full_path] => map-placeholder_63.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php6983.tmp
+            [error] => 0
+            [size] => 139595
+        )
+
+    [additional_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => Saree_50.jpg
+                    [1] => gemini.png
+                    [2] => Screenshot 2024-10-12 153039.png
+                )
+
+            [full_path] => Array
+                (
+                    [0] => Saree_50.jpg
+                    [1] => gemini.png
+                    [2] => Screenshot 2024-10-12 153039.png
+                )
+
+            [type] => Array
+                (
+                    [0] => image/jpeg
+                    [1] => image/png
+                    [2] => image/png
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php6984.tmp
+                    [1] => C:\xampp\tmp\php6985.tmp
+                    [2] => C:\xampp\tmp\php6996.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                    [1] => 0
+                    [2] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 64310
+                    [1] => 12850
+                    [2] => 56600
+                )
+
+        )
+
+)
+
+2024-11-14 00:47:50 - Database connection successful
+2024-11-14 00:47:50 - Started database transaction
+2024-11-14 00:47:50 - Processing primary image
+2024-11-14 00:47:50 - Primary image extension: jpg
+2024-11-14 00:47:50 - Saving primary image to: images/products/67353aa6c70b9_primary.jpg
+2024-11-14 00:47:50 - Primary image processed successfully
+2024-11-14 00:47:50 - Inserting product into database
+2024-11-14 00:47:50 - Executing product insert with params:
+Array
+(
+    [title] => test3withmoreadd
+    [price] => 1100
+    [description] => 2e3
+    [image_path] => images/products/67353aa6c70b9_primary.jpg
+)
+
+2024-11-14 00:47:50 - Product inserted successfully with ID: 60
+2024-11-14 00:47:50 - === Processing Additional Images ===
+2024-11-14 00:47:50 - Additional Images Data:
+Array
+(
+    [name] => Array
+        (
+            [0] => Saree_50.jpg
+            [1] => gemini.png
+            [2] => Screenshot 2024-10-12 153039.png
+        )
+
+    [full_path] => Array
+        (
+            [0] => Saree_50.jpg
+            [1] => gemini.png
+            [2] => Screenshot 2024-10-12 153039.png
+        )
+
+    [type] => Array
+        (
+            [0] => image/jpeg
+            [1] => image/png
+            [2] => image/png
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php6984.tmp
+            [1] => C:\xampp\tmp\php6985.tmp
+            [2] => C:\xampp\tmp\php6996.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+            [1] => 0
+            [2] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 64310
+            [1] => 12850
+            [2] => 56600
+        )
+
+)
+
+2024-11-14 00:47:50 - Processing additional image 0
+2024-11-14 00:47:50 - Additional image 0 extension: jpg
+2024-11-14 00:47:50 - Saving additional image to: images/additional/67353aa6d628f_additional.jpg
+2024-11-14 00:47:50 - Executing additional image insert for image 0
+2024-11-14 00:47:50 - Additional image 0 processed and saved successfully
+2024-11-14 00:47:50 - Processing additional image 1
+2024-11-14 00:47:50 - Additional image 1 extension: png
+2024-11-14 00:47:50 - Saving additional image to: images/additional/67353aa6df72c_additional.png
+2024-11-14 00:47:50 - Executing additional image insert for image 1
+2024-11-14 00:47:50 - Additional image 1 processed and saved successfully
+2024-11-14 00:47:50 - Processing additional image 2
+2024-11-14 00:47:50 - Additional image 2 extension: png
+2024-11-14 00:47:50 - Saving additional image to: images/additional/67353aa6ef379_additional.png
+2024-11-14 00:47:51 - Executing additional image insert for image 2
+2024-11-14 00:47:51 - Additional image 2 processed and saved successfully
+2024-11-14 00:47:51 - === Processing Colors ===
+2024-11-14 00:47:51 - Color Names:
+No color names
+2024-11-14 00:47:51 - Color Images:
+No color images
+2024-11-14 00:47:51 - === Product Upload Completed Successfully ===
+2024-11-14 00:47:51 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 60
+            [title] => test3withmoreadd
+            [price] => 1100
+            [image_path] => images/products/67353aa6c70b9_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-14 00:47:50
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-14 00:48:22 - === Starting Product Upload ===
+2024-11-14 00:48:22 - POST Data:
+Array
+(
+    [title] => testwithcolor
+    [price] => 123
+    [description] => 12321
+    [color_names] => Array
+        (
+            [0] => red
+        )
+
+)
+
+2024-11-14 00:48:22 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => map-placeholder_63.jpg
+            [full_path] => map-placeholder_63.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\phpE62A.tmp
+            [error] => 0
+            [size] => 139595
+        )
+
+    [color_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => gemini.png
+                )
+
+            [full_path] => Array
+                (
+                    [0] => gemini.png
+                )
+
+            [type] => Array
+                (
+                    [0] => image/png
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\phpE63A.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 12850
+                )
+
+        )
+
+)
+
+2024-11-14 00:48:22 - Database connection successful
+2024-11-14 00:48:22 - Started database transaction
+2024-11-14 00:48:22 - Processing primary image
+2024-11-14 00:48:22 - Primary image extension: jpg
+2024-11-14 00:48:22 - Saving primary image to: images/products/67353ac6aaad7_primary.jpg
+2024-11-14 00:48:22 - Primary image processed successfully
+2024-11-14 00:48:22 - Inserting product into database
+2024-11-14 00:48:22 - Executing product insert with params:
+Array
+(
+    [title] => testwithcolor
+    [price] => 123
+    [description] => 12321
+    [image_path] => images/products/67353ac6aaad7_primary.jpg
+)
+
+2024-11-14 00:48:22 - Product inserted successfully with ID: 61
+2024-11-14 00:48:22 - === Processing Additional Images ===
+2024-11-14 00:48:22 - Additional Images Data:
+No additional images
+2024-11-14 00:48:22 - === Processing Colors ===
+2024-11-14 00:48:22 - Color Names:
+Array
+(
+    [0] => red
+)
+
+2024-11-14 00:48:22 - Color Images:
+Array
+(
+    [name] => Array
+        (
+            [0] => gemini.png
+        )
+
+    [full_path] => Array
+        (
+            [0] => gemini.png
+        )
+
+    [type] => Array
+        (
+            [0] => image/png
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\phpE63A.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 12850
+        )
+
+)
+
+2024-11-14 00:48:22 - Processing color 0: red
+2024-11-14 00:48:22 - Color image 0 extension: png
+2024-11-14 00:48:22 - Saving color image to: images/colors/67353ac6b9a01_color.png
+2024-11-14 00:48:22 - Executing color insert for color: red with path: images/colors/67353ac6b9a01_color.png
+2024-11-14 00:48:22 - Color 0 (red) processed and saved successfully
+2024-11-14 00:48:22 - === Product Upload Completed Successfully ===
+2024-11-14 00:48:22 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 61
+            [title] => testwithcolor
+            [price] => 123
+            [image_path] => images/products/67353ac6aaad7_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-14 00:48:22
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
+2024-11-14 00:49:09 - === Starting Product Upload ===
+2024-11-14 00:49:09 - POST Data:
+Array
+(
+    [title] => testcolorandadd
+    [price] => 123
+    [description] => 234e3
+    [color_names] => Array
+        (
+            [0] => red
+        )
+
+)
+
+2024-11-14 00:49:09 - FILES Data:
+Array
+(
+    [primary_image] => Array
+        (
+            [name] => Saree_50.jpg
+            [full_path] => Saree_50.jpg
+            [type] => image/jpeg
+            [tmp_name] => C:\xampp\tmp\php9B81.tmp
+            [error] => 0
+            [size] => 64310
+        )
+
+    [additional_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => gemini.png
+                )
+
+            [full_path] => Array
+                (
+                    [0] => gemini.png
+                )
+
+            [type] => Array
+                (
+                    [0] => image/png
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php9B82.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 12850
+                )
+
+        )
+
+    [color_images] => Array
+        (
+            [name] => Array
+                (
+                    [0] => Screenshot 2024-10-12 153039.png
+                )
+
+            [full_path] => Array
+                (
+                    [0] => Screenshot 2024-10-12 153039.png
+                )
+
+            [type] => Array
+                (
+                    [0] => image/png
+                )
+
+            [tmp_name] => Array
+                (
+                    [0] => C:\xampp\tmp\php9B83.tmp
+                )
+
+            [error] => Array
+                (
+                    [0] => 0
+                )
+
+            [size] => Array
+                (
+                    [0] => 56600
+                )
+
+        )
+
+)
+
+2024-11-14 00:49:09 - Database connection successful
+2024-11-14 00:49:09 - Started database transaction
+2024-11-14 00:49:09 - Processing primary image
+2024-11-14 00:49:09 - Primary image extension: jpg
+2024-11-14 00:49:09 - Saving primary image to: images/products/67353af51e585_primary.jpg
+2024-11-14 00:49:09 - Primary image processed successfully
+2024-11-14 00:49:09 - Inserting product into database
+2024-11-14 00:49:09 - Executing product insert with params:
+Array
+(
+    [title] => testcolorandadd
+    [price] => 123
+    [description] => 234e3
+    [image_path] => images/products/67353af51e585_primary.jpg
+)
+
+2024-11-14 00:49:09 - Product inserted successfully with ID: 62
+2024-11-14 00:49:09 - === Processing Additional Images ===
+2024-11-14 00:49:09 - Additional Images Data:
+Array
+(
+    [name] => Array
+        (
+            [0] => gemini.png
+        )
+
+    [full_path] => Array
+        (
+            [0] => gemini.png
+        )
+
+    [type] => Array
+        (
+            [0] => image/png
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php9B82.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 12850
+        )
+
+)
+
+2024-11-14 00:49:09 - Processing additional image 0
+2024-11-14 00:49:09 - Additional image 0 extension: png
+2024-11-14 00:49:09 - Saving additional image to: images/additional/67353af5313bd_additional.png
+2024-11-14 00:49:09 - Executing additional image insert for image 0
+2024-11-14 00:49:09 - Additional image 0 processed and saved successfully
+2024-11-14 00:49:09 - === Processing Colors ===
+2024-11-14 00:49:09 - Color Names:
+Array
+(
+    [0] => red
+)
+
+2024-11-14 00:49:09 - Color Images:
+Array
+(
+    [name] => Array
+        (
+            [0] => Screenshot 2024-10-12 153039.png
+        )
+
+    [full_path] => Array
+        (
+            [0] => Screenshot 2024-10-12 153039.png
+        )
+
+    [type] => Array
+        (
+            [0] => image/png
+        )
+
+    [tmp_name] => Array
+        (
+            [0] => C:\xampp\tmp\php9B83.tmp
+        )
+
+    [error] => Array
+        (
+            [0] => 0
+        )
+
+    [size] => Array
+        (
+            [0] => 56600
+        )
+
+)
+
+2024-11-14 00:49:09 - Processing color 0: red
+2024-11-14 00:49:09 - Color image 0 extension: png
+2024-11-14 00:49:09 - Saving color image to: images/colors/67353af55473f_color.png
+2024-11-14 00:49:09 - Executing color insert for color: red with path: images/colors/67353af55473f_color.png
+2024-11-14 00:49:09 - Color 0 (red) processed and saved successfully
+2024-11-14 00:49:09 - === Product Upload Completed Successfully ===
+2024-11-14 00:49:09 - Final response:
+Array
+(
+    [success] => 1
+    [message] => Product added successfully
+    [product] => Array
+        (
+            [id] => 62
+            [title] => testcolorandadd
+            [price] => 123
+            [image_path] => images/products/67353af51e585_primary.jpg
+        )
+
+    [debug] => Array
+        (
+            [0] => Script start time: 2024-11-14 00:49:09
+            [1] => PHP Version: 8.2.12
+            [2] => Server Software: PHP 8.2.12 Development Server
+            [3] => display_errors: 0
+            [4] => error_reporting: 32767
+            [5] => log_errors: 1
+            [6] => error_log: php_errors.log
+            [7] => output_buffering: 4096
+            [8] => default_mimetype: text/html
+            [9] => default_charset: UTF-8
+            [10] => max_execution_time: 120
+            [11] => memory_limit: 512M
+        )
+
+)
+
