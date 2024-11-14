@@ -388,11 +388,182 @@ function deleteProduct(productId) {
 }
 
 function editProduct(productId) {
-    // TO DO: implement edit product functionality
+    const editProductModal = document.getElementById('editProductModal');
+    const editForm = document.getElementById('editProductForm');
+    
+    // Show loading state
+    editProductModal.style.display = 'block';
+    editForm.innerHTML = '<p>Loading product details...</p>';
+
+    // Fetch product details
+    fetch(`get_product.php?id=${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const product = data.product;
+                
+                // Create form HTML
+                editForm.innerHTML = `
+                    <input type="hidden" name="product_id" value="${product.id}">
+                    <div class="form-group">
+                        <label for="edit_title">Title</label>
+                        <input type="text" id="edit_title" name="title" value="${product.title}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_price">Price</label>
+                        <input type="number" id="edit_price" name="price" value="${product.price}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_description">Description</label>
+                        <textarea id="edit_description" name="description" required>${product.description}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Current Image</label>
+                        <img src="${product.image_path}" alt="${product.title}" style="max-width: 100px;">
+                        <label for="edit_image">Change Image (optional)</label>
+                        <input type="file" id="edit_image" name="image" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Additional Images</label>
+                        <div id="edit_additional_images" class="image-upload-container">
+                            ${product.additional_images.map(img => `
+                                <div class="existing-image">
+                                    <img src="${img}" alt="Additional Image">
+                                    <button type="button" class="remove-additional-image" data-path="${img}">×</button>
+                                </div>
+                            `).join('')}
+                            <div class="image-upload-box empty">
+                                <input type="file" name="new_additional_images[]" accept="image/*" multiple class="hidden-file-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Colors</label>
+                        <div id="edit_colors" class="color-inputs">
+                            ${product.colors.map(color => `
+                                <div class="color-input">
+                                    <input type="text" name="color_names[]" value="${color.name}" placeholder="Color name">
+                                    <div class="color-image">
+                                        <img src="${color.image_path}" alt="${color.name}">
+                                        <button type="button" class="remove-color" data-color="${color.name}">×</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                            <button type="button" id="edit_add_color" class="btn">Add Color</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Update Product</button>
+                `;
+
+                // Initialize image upload functionality for additional images
+                initializeEditImageUpload();
+                
+                // Add event listener for adding new colors
+                document.getElementById('edit_add_color')?.addEventListener('click', addEditColorInput);
+                
+                // Add event listeners for removing existing images and colors
+                setupRemoveHandlers();
+            } else {
+                editForm.innerHTML = `<p>Error loading product: ${data.message}</p>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            editForm.innerHTML = '<p>Error loading product details. Please try again.</p>';
+        });
+}
+
+function initializeEditImageUpload() {
+    const fileInputs = document.querySelectorAll('.image-upload-box input[type="file"]');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function(e) {
+            const box = this.parentElement;
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    box.innerHTML = `
+                        <img src="${e.target.result}" alt="Selected Image">
+                        <button type="button" class="remove-image">×</button>
+                        <input type="file" name="new_additional_images[]" accept="image/*" class="hidden-file-input">
+                    `;
+                    box.classList.remove('empty');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+}
+
+function addEditColorInput() {
+    const colorInputs = document.getElementById('edit_colors');
+    const newColorInput = document.createElement('div');
+    newColorInput.className = 'color-input';
+    newColorInput.innerHTML = `
+        <input type="text" name="color_names[]" placeholder="Color name" required>
+        <input type="file" name="color_images[]" accept="image/*" required>
+        <button type="button" class="remove-color">×</button>
+    `;
+    colorInputs.insertBefore(newColorInput, document.getElementById('edit_add_color'));
+    
+    // Add remove handler
+    newColorInput.querySelector('.remove-color').addEventListener('click', function() {
+        newColorInput.remove();
+    });
+}
+
+function setupRemoveHandlers() {
+    // Setup handlers for removing additional images
+    document.querySelectorAll('.remove-additional-image').forEach(button => {
+        button.addEventListener('click', function() {
+            const imagePath = this.dataset.path;
+            const imageDiv = this.parentElement;
+            // Add hidden input to track removed images
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'removed_additional_images[]';
+            hiddenInput.value = imagePath;
+            document.getElementById('editProductForm').appendChild(hiddenInput);
+            imageDiv.remove();
+        });
+    });
+    
+    // Setup handlers for removing colors
+    document.querySelectorAll('.remove-color').forEach(button => {
+        button.addEventListener('click', function() {
+            const colorName = this.dataset.color;
+            if (colorName) {
+                // Add hidden input to track removed colors
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'removed_colors[]';
+                hiddenInput.value = colorName;
+                document.getElementById('editProductForm').appendChild(hiddenInput);
+            }
+            this.closest('.color-input').remove();
+        });
+    });
 }
 
 function updateProduct(formData) {
-    // TO DO: implement update product functionality
+    fetch('update_product.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('editProductModal').style.display = 'none';
+            refreshProducts();
+            alert('Product updated successfully');
+        } else {
+            alert('Error updating product: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating product. Please try again.');
+    });
 }
 
 function logout() {
