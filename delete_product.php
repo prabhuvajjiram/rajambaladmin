@@ -3,13 +3,11 @@ header('Content-Type: application/json');
 require_once 'db_config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get JSON input
     $json = file_get_contents('php://input');
     $data = json_decode($json, true);
     $product_id = isset($data['product_id']) ? intval($data['product_id']) : 0;
     
     if ($product_id > 0) {
-        // Start transaction
         mysqli_begin_transaction($conn);
         
         try {
@@ -72,24 +70,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             
             // Delete image files
             foreach ($image_paths as $path) {
-                if ($path && file_exists($path)) {
+                if (!empty($path) && file_exists($path)) {
                     unlink($path);
                 }
             }
             
-            // Commit transaction
             mysqli_commit($conn);
-            echo json_encode(["success" => true, "message" => "Product deleted successfully"]);
+            echo json_encode(['success' => true, 'message' => 'Product deleted successfully']);
             
         } catch (Exception $e) {
             mysqli_rollback($conn);
-            echo json_encode(["success" => false, "message" => "Error: " . $e->getMessage()]);
+            echo json_encode(['success' => false, 'message' => 'Failed to delete product']);
         }
     } else {
-        echo json_encode(["success" => false, "message" => "Invalid product ID"]);
+        echo json_encode(['success' => false, 'message' => 'Invalid product ID']);
     }
 } else {
-    echo json_encode(["success" => false, "message" => "Invalid request method"]);
+    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
 }
 
 mysqli_close($conn);

@@ -1,8 +1,5 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 0); // Disable error display
 header('Content-Type: application/json');
-
 require_once 'db_config.php';
 
 // Function to ensure proper image path format
@@ -102,7 +99,6 @@ try {
     }
 } catch (Exception $e) {
     $response['message'] = $e->getMessage();
-    error_log("Error in get_product.php: " . $e->getMessage());
 }
 
 mysqli_close($conn);

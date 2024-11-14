@@ -98,12 +98,10 @@ function createProductCard(product) {
                      class="main-product-image" 
                      data-original-image="${originalImage}"
                      onerror="this.onerror=null; this.src='images/placeholder.jpg'">
-                ${product.additional_images && product.additional_images.length > 0 ? `
-                    <div class="image-navigation">
-                        <button class="nav-arrow prev">❮</button>
-                        <button class="nav-arrow next">❯</button>
-                    </div>
-                ` : ''}
+                <div class="image-navigation" style="display: none;">
+                    <button class="nav-arrow prev">❮</button>
+                    <button class="nav-arrow next">❯</button>
+                </div>
             </div>
         </div>
         <h3>${product.title}</h3>
@@ -168,75 +166,9 @@ function createProductCard(product) {
     }
 
     // Set up image preview and navigation
-    if (product.additional_images && product.additional_images.length > 0) {
-        const prevBtn = productCard.querySelector('.nav-arrow.prev');
-        const nextBtn = productCard.querySelector('.nav-arrow.next');
-        let currentIndex = 0;
-        const images = [originalImage, ...product.additional_images];
-
-        if (prevBtn && nextBtn) {
-            prevBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                currentIndex = (currentIndex - 1 + images.length) % images.length;
-                mainImage.src = images[currentIndex];
-            });
-
-            nextBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                currentIndex = (currentIndex + 1) % images.length;
-                mainImage.src = images[currentIndex];
-            });
-        }
-    }
+    setupImagePreview(productCard, product);
 
     return productCard;
-}
-
-function addToCart(product, colorName = null, currentImage = null) {
-    console.log('Adding to cart:', { 
-        productId: product.id, 
-        colorName, 
-        current_image: currentImage,
-        original_image: product.image_path
-    });
-    
-    // Get existing cart or initialize new one
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    // Find if this product with the same color already exists in cart
-    const existingItemIndex = cart.findIndex(item => 
-        item.id === product.id && 
-        (!colorName || item.selectedColor === colorName)
-    );
-    
-    if (existingItemIndex !== -1) {
-        // Update quantity if item exists
-        cart[existingItemIndex].quantity += 1;
-        console.log('Updated existing cart item quantity');
-    } else {
-        // Add new item if it doesn't exist
-        const cartItem = {
-            id: product.id,
-            title: product.title,
-            price: product.price,
-            image: currentImage || product.image_path,
-            selectedColor: colorName,
-            quantity: 1
-        };
-        cart.push(cartItem);
-        console.log('Added new item to cart:', cartItem);
-    }
-    
-    // Save updated cart
-    localStorage.setItem('cart', JSON.stringify(cart));
-    console.log('Updated cart in localStorage:', cart);
-    
-    // Ensure cart button is visible and update UI
-    ensureCartButtonVisibility();
-    updateCartUI();
-    
-    // Show success message
-    showNotification('Product added to cart!');
 }
 
 function setupImagePreview(productCard, product) {
@@ -254,27 +186,64 @@ function setupImagePreview(productCard, product) {
                 const navigation = productCard.querySelector('.image-navigation');
                 const prevBtn = productCard.querySelector('.nav-arrow.prev');
                 const nextBtn = productCard.querySelector('.nav-arrow.next');
+                const imageContainer = productCard.querySelector('.product-image');
 
-                // Only show navigation if we have multiple images
-                if (allImages.length <= 1) {
+                // Show navigation if we have multiple images
+                if (allImages.length > 1) {
+                    navigation.style.display = 'flex';
+                } else {
                     navigation.style.display = 'none';
                 }
 
                 let currentImageIndex = 0;
+                let touchStartX = 0;
+                let touchEndX = 0;
 
                 function updateImage() {
                     mainImage.src = allImages[currentImageIndex];
-                    console.log('Updated main image to:', mainImage.src);
+                }
+
+                function handleSwipe() {
+                    const swipeThreshold = 50; // minimum distance for swipe
+                    const swipeDistance = touchEndX - touchStartX;
+                    
+                    if (Math.abs(swipeDistance) >= swipeThreshold) {
+                        if (swipeDistance > 0) {
+                            // Swipe right - show previous image
+                            currentImageIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
+                        } else {
+                            // Swipe left - show next image
+                            currentImageIndex = (currentImageIndex + 1) % allImages.length;
+                        }
+                        updateImage();
+                    }
+                }
+
+                if (imageContainer && allImages.length > 1) {
+                    // Touch events for mobile swipe
+                    imageContainer.addEventListener('touchstart', (e) => {
+                        touchStartX = e.touches[0].clientX;
+                    }, { passive: true });
+
+                    imageContainer.addEventListener('touchmove', (e) => {
+                        touchEndX = e.touches[0].clientX;
+                    }, { passive: true });
+
+                    imageContainer.addEventListener('touchend', () => {
+                        handleSwipe();
+                    }, { passive: true });
                 }
 
                 if (prevBtn && nextBtn && allImages.length > 1) {
                     prevBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         currentImageIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
                         updateImage();
                     });
 
                     nextBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         currentImageIndex = (currentImageIndex + 1) % allImages.length;
                         updateImage();
@@ -283,7 +252,6 @@ function setupImagePreview(productCard, product) {
             }
         })
         .catch(error => {
-            console.error('Error loading additional images:', error);
             const navigation = productCard.querySelector('.image-navigation');
             navigation.style.display = 'none';
         });
@@ -462,7 +430,6 @@ function handleRemoveItem(event) {
 }
 
 function toggleCartMenu() {
-    console.log('Toggling cart menu');
     const cartMenu = document.querySelector('.cart-menu');
     if (cartMenu) {
         cartMenu.classList.toggle('active');
@@ -475,12 +442,8 @@ function setupCheckoutButton() {
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', function(event) {
             event.preventDefault();
-            console.log('Checkout button clicked');
             window.location.href = 'checkout.html';
         });
-        console.log('Checkout button handler added');
-    } else {
-        console.error('Checkout button not found');
     }
 }
 
@@ -493,8 +456,6 @@ function ensureCartButtonVisibility() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM fully loaded and parsed');
-    
     // Hamburger menu functionality
     const menuToggle = document.querySelector('.menu-toggle');
     const mainNav = document.querySelector('.main-nav');
@@ -539,8 +500,6 @@ document.addEventListener('DOMContentLoaded', function() {
         mainNav.addEventListener('click', function(event) {
             event.stopPropagation();
         });
-    } else {
-        console.error('Menu toggle or main nav not found');
     }
 
     // Initial cart setup
@@ -550,14 +509,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartToggle = document.querySelector('.cart-toggle');
     if (cartToggle) {
         cartToggle.addEventListener('click', toggleCartMenu);
-        console.log('Cart toggle listener added');
     }
     
     // Add close cart button functionality
     const closeCartBtn = document.querySelector('.close-cart');
     if (closeCartBtn) {
         closeCartBtn.addEventListener('click', toggleCartMenu);
-        console.log('Close cart button listener added');
     }
 
     fetchProducts();
@@ -570,22 +527,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
         contactForm.addEventListener('submit', submitContactForm);
-    } else {
-        console.log('Contact form not found on this page');
     }
 
     const searchInput = document.querySelector('#searchInput');
     if (searchInput) {
         searchInput.addEventListener('input', searchProducts);
-    } else {
-        console.log('Search input not found on this page');
     }
 
     const productForm = document.getElementById('productForm');
     if (productForm) {
         productForm.addEventListener('submit', submitProductForm);
-    } else {
-        console.log('Product form not found on this page');
     }
     
     // Setup checkout button
@@ -599,19 +550,16 @@ function toggleMenu() {
     const mainNav = document.querySelector('.main-nav');
     document.body.classList.toggle('menu-open');
     mainNav.classList.toggle('active');
-    console.log('Menu toggled');
 }
 
 function closeMenu() {
     const mainNav = document.querySelector('.main-nav');
     document.body.classList.remove('menu-open');
     mainNav.classList.remove('active');
-    console.log('Menu closed');
 }
 
 function submitContactForm(event) {
     event.preventDefault();
-    console.log('Contact form submitted');
 
     const formData = new FormData(event.target);
     const formMessage = document.getElementById('formMessage');
@@ -621,11 +569,9 @@ function submitContactForm(event) {
         body: formData
     })
     .then(response => {
-        console.log('Response received:', response);
         return response.json();
     })
     .then(data => {
-        console.log('Data received:', data);
         formMessage.textContent = data.message;
         formMessage.style.display = 'block';
         formMessage.style.color = data.status === 'success' ? 'green' : 'red';
@@ -633,11 +579,9 @@ function submitContactForm(event) {
         if (data.status === 'success') {
             event.target.reset();
         } else {
-            console.error('Error details:', data.error);
         }
     })
     .catch(error => {
-        console.error('Fetch error:', error);
         formMessage.textContent = 'An error occurred. Please try again later.';
         formMessage.style.display = 'block';
         formMessage.style.color = 'red';
@@ -645,27 +589,22 @@ function submitContactForm(event) {
 }
 
 function loadProducts(page = 1) {
-    console.log('Loading products page:', page);
     fetch('get_products.php')
         .then(response => response.json())
         .then(data => {
-            console.log('Products data:', data);
             if (data.status === 'success') {
                 const productsContainer = document.getElementById('products-container');
                 if (productsContainer) {
                     data.products.forEach(product => {
-                        console.log('Creating card for product:', product);
                         const productCard = createProductCard(product);
                         productsContainer.appendChild(productCard);
                     });
-                } else {
-                    console.error('Products container not found');
                 }
             } else {
-                console.error('Error loading products:', data.message);
             }
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => {
+        });
 }
 
 function lazyLoadProducts() {
@@ -707,3 +646,40 @@ function debounce(func, wait) {
 const searchProducts = debounce(() => {
     // Implement search functionality here
 }, 300);
+
+function addToCart(product, colorName = null, currentImage = null) {
+    // Get existing cart or initialize new one
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    // Find if this product with the same color already exists in cart
+    const existingItemIndex = cart.findIndex(item => 
+        item.id === product.id && 
+        (!colorName || item.selectedColor === colorName)
+    );
+    
+    if (existingItemIndex !== -1) {
+        // Update quantity if item exists
+        cart[existingItemIndex].quantity += 1;
+    } else {
+        // Add new item if it doesn't exist
+        const cartItem = {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            image: currentImage || product.image_path,
+            selectedColor: colorName,
+            quantity: 1
+        };
+        cart.push(cartItem);
+    }
+    
+    // Save updated cart
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Ensure cart button is visible and update UI
+    ensureCartButtonVisibility();
+    updateCartUI();
+    
+    // Show success message
+    showNotification('Product added to cart!');
+}
