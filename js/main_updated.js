@@ -117,6 +117,7 @@ function createProductCard(product) {
     const colorOptions = productCard.querySelectorAll('.color-option');
     const mainImage = productCard.querySelector('.main-product-image');
     let selectedColor = null;
+    let selectedColorImage = originalImage;
     
     if (colorOptions.length > 0) {
         colorOptions.forEach(option => {
@@ -128,11 +129,11 @@ function createProductCard(product) {
                 colorOptions.forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
                 selectedColor = colorName === 'original' ? null : colorName;
+                selectedColorImage = colorImage;
                 
                 // Update main image with color image
                 if (mainImage && colorImage) {
                     mainImage.src = colorImage;
-                    product.current_image = colorImage;
                 }
             });
         });
@@ -145,22 +146,13 @@ function createProductCard(product) {
             const selectedColorOption = productCard.querySelector('.color-option.selected');
             const hasColorOptions = product.colors && product.colors.length > 0;
             
-            // Get the current displayed image
-            const currentDisplayedImage = productCard.querySelector('.main-product-image').src;
-            
-            // If product has colors available
-            if (hasColorOptions) {
-                const colorName = selectedColorOption ? selectedColorOption.dataset.colorName : null;
-                const colorImage = selectedColorOption ? selectedColorOption.dataset.colorImage : null;
+            if (hasColorOptions && selectedColorOption) {
+                const colorName = selectedColorOption.dataset.colorName;
+                const colorImage = selectedColorOption.dataset.colorImage;
                 
-                // Use selected color image or current displayed image
-                product.current_image = colorImage || currentDisplayedImage;
-                
-                addToCart(product, colorName === 'original' ? null : colorName);
+                addToCart(product, colorName === 'original' ? null : colorName, colorImage);
             } else {
-                // Product has no color options, use default image
-                product.current_image = product.image_path;
-                addToCart(product, null);
+                addToCart(product, null, originalImage);
             }
         });
     }
@@ -455,6 +447,43 @@ function ensureCartButtonVisibility() {
     }
 }
 
+function addToCart(product, colorName = null, currentImage = null) {
+    // Get existing cart or initialize new one
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    // Find if this product with the same color already exists in cart
+    const existingItemIndex = cart.findIndex(item => 
+        item.id === product.id && 
+        item.selectedColor === colorName
+    );
+    
+    if (existingItemIndex !== -1) {
+        // Update quantity if item exists
+        cart[existingItemIndex].quantity += 1;
+    } else {
+        // Add new item if it doesn't exist
+        const cartItem = {
+            id: product.id,
+            title: product.title,
+            price: product.price,
+            image: currentImage || product.image_path,
+            selectedColor: colorName,
+            quantity: 1
+        };
+        cart.push(cartItem);
+    }
+    
+    // Save updated cart
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Ensure cart button is visible and update UI
+    ensureCartButtonVisibility();
+    updateCartUI();
+    
+    // Show success message
+    showNotification('Product added to cart!');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Hamburger menu functionality
     const menuToggle = document.querySelector('.menu-toggle');
@@ -646,40 +675,3 @@ function debounce(func, wait) {
 const searchProducts = debounce(() => {
     // Implement search functionality here
 }, 300);
-
-function addToCart(product, colorName = null, currentImage = null) {
-    // Get existing cart or initialize new one
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    // Find if this product with the same color already exists in cart
-    const existingItemIndex = cart.findIndex(item => 
-        item.id === product.id && 
-        (!colorName || item.selectedColor === colorName)
-    );
-    
-    if (existingItemIndex !== -1) {
-        // Update quantity if item exists
-        cart[existingItemIndex].quantity += 1;
-    } else {
-        // Add new item if it doesn't exist
-        const cartItem = {
-            id: product.id,
-            title: product.title,
-            price: product.price,
-            image: currentImage || product.image_path,
-            selectedColor: colorName,
-            quantity: 1
-        };
-        cart.push(cartItem);
-    }
-    
-    // Save updated cart
-    localStorage.setItem('cart', JSON.stringify(cart));
-    
-    // Ensure cart button is visible and update UI
-    ensureCartButtonVisibility();
-    updateCartUI();
-    
-    // Show success message
-    showNotification('Product added to cart!');
-}
