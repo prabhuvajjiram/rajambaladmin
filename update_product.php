@@ -1,241 +1,261 @@
 <?php
+header('Content-Type: application/json');
 require_once 'db_config.php';
 
 // Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('log_errors', 1);
 error_reporting(E_ALL);
-error_log("Starting update_product.php");
 
-header('Content-Type: application/json');
-
-// Function to ensure proper image path format and process uploaded image
-function processAndSaveImage($file, $type = 'products', $suffix = 'primary') {
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        throw new Exception('Error uploading file: ' . $file['error']);
-    }
-
-    $upload_dir = "images/{$type}/";
-    if (!file_exists($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-
-    $file_extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-    $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
+// Function to ensure proper image path format
+function formatImagePath($path, $type = 'products') {
+    if (empty($path)) return null;
     
-    if (!in_array($file_extension, $allowed_types)) {
-        throw new Exception('Invalid file type. Only JPG, JPEG, PNG & GIF files are allowed.');
+    // If path already has correct format, return as is
+    if (strpos($path, 'images/' . $type . '/') === 0) {
+        return $path;
     }
-
-    $new_filename = uniqid() . "_{$suffix}." . $file_extension;
-    $target_path = $upload_dir . $new_filename;
-
-    if (!move_uploaded_file($file['tmp_name'], $target_path)) {
-        throw new Exception('Failed to move uploaded file.');
-    }
-
-    return $target_path;
+    
+    // Remove any leading slashes
+    $path = ltrim($path, '/');
+    
+    // Ensure the path starts with the correct directory
+    return "images/$type/" . basename($path);
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        mysqli_begin_transaction($conn);
-        
-        $product_id = intval($_POST['product_id']);
-        $title = mysqli_real_escape_string($conn, $_POST['title']);
-        $price = floatval($_POST['price']);
-        $description = mysqli_real_escape_string($conn, $_POST['description']);
+// Function to safely delete a file
+function safeDeleteFile($filepath) {
+    if (empty($filepath)) return;
+    
+    $fullPath = __DIR__ . '/' . $filepath;
+    if (file_exists($fullPath) && is_file($fullPath)) {
+        unlink($fullPath);
+    }
+}
 
-        // Update product details
-        $query = "UPDATE products SET title = ?, price = ?, description = ? WHERE id = ?";
-        $stmt = mysqli_prepare($conn, $query);
-        mysqli_stmt_bind_param($stmt, "sdsi", $title, $price, $description, $product_id);
-        
-        if (!mysqli_stmt_execute($stmt)) {
-            throw new Exception('Failed to update product details: ' . mysqli_error($conn));
+// Initialize response
+$response = ['success' => false, 'message' => ''];
+
+try {
+    mysqli_begin_transaction($conn);
+
+    // Basic validation
+    if (!isset($_POST['product_id'])) {
+        throw new Exception('Product ID is required');
+    }
+
+    $product_id = intval($_POST['product_id']);
+    $title = mysqli_real_escape_string($conn, $_POST['title']);
+    $description = mysqli_real_escape_string($conn, $_POST['description']);
+    $price = floatval($_POST['price']);
+
+    // Handle primary image upload
+    $image_path = null;
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = 'images/products/';
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
         }
-        mysqli_stmt_close($stmt);
 
-        // Handle main image upload if provided
-        if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-            // Get old image path first
+        $file_extension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+        $new_filename = uniqid() . '_primary.' . $file_extension;
+        $upload_path = $upload_dir . $new_filename;
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $upload_path)) {
+            // Get and delete old image
             $old_image_query = "SELECT image_path FROM products WHERE id = ?";
             $stmt = mysqli_prepare($conn, $old_image_query);
             mysqli_stmt_bind_param($stmt, "i", $product_id);
             mysqli_stmt_execute($stmt);
-            mysqli_stmt_bind_result($stmt, $old_image_path);
+            mysqli_stmt_bind_result($stmt, $old_image);
             if (mysqli_stmt_fetch($stmt)) {
-                if (!empty($old_image_path) && file_exists($old_image_path)) {
-                    unlink($old_image_path);
-                }
+                safeDeleteFile($old_image);
             }
             mysqli_stmt_close($stmt);
 
-            // Process and save new image
-            $image_path = processAndSaveImage($_FILES['image'], 'products', 'primary');
+            $image_path = $upload_path;
+        }
+    }
 
-            // Update with new image path
-            $image_query = "UPDATE products SET image_path = ? WHERE id = ?";
-            $stmt = mysqli_prepare($conn, $image_query);
-            mysqli_stmt_bind_param($stmt, "si", $image_path, $product_id);
-            if (!mysqli_stmt_execute($stmt)) {
-                throw new Exception('Failed to update product image: ' . mysqli_error($conn));
+    // Update product basic info
+    $update_query = "UPDATE products SET title = ?, description = ?, price = ?";
+    $params = [$title, $description, $price];
+    $types = "ssd";
+
+    if ($image_path) {
+        $update_query .= ", image_path = ?";
+        $params[] = $image_path;
+        $types .= "s";
+    }
+
+    $update_query .= " WHERE id = ?";
+    $params[] = $product_id;
+    $types .= "i";
+
+    $stmt = mysqli_prepare($conn, $update_query);
+    if (!$stmt) {
+        throw new Exception('Failed to prepare product update statement: ' . mysqli_error($conn));
+    }
+
+    mysqli_stmt_bind_param($stmt, $types, ...$params);
+    if (!mysqli_stmt_execute($stmt)) {
+        throw new Exception('Failed to update product: ' . mysqli_stmt_error($stmt));
+    }
+    mysqli_stmt_close($stmt);
+
+    // Handle removed additional images
+    if (isset($_POST['removed_additional_images']) && is_array($_POST['removed_additional_images'])) {
+        foreach ($_POST['removed_additional_images'] as $image_id) {
+            // Get the image path before deleting
+            $get_path_query = "SELECT image_path FROM product_images WHERE id = ? AND product_id = ?";
+            $stmt = mysqli_prepare($conn, $get_path_query);
+            mysqli_stmt_bind_param($stmt, "ii", $image_id, $product_id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_bind_result($stmt, $image_path);
+            if (mysqli_stmt_fetch($stmt)) {
+                safeDeleteFile($image_path);
             }
             mysqli_stmt_close($stmt);
+
+            // Delete from database
+            $delete_query = "DELETE FROM product_images WHERE id = ? AND product_id = ?";
+            $stmt = mysqli_prepare($conn, $delete_query);
+            mysqli_stmt_bind_param($stmt, "ii", $image_id, $product_id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+        }
+    }
+
+    // Handle new additional images
+    if (isset($_FILES['additional_images'])) {
+        $upload_dir = 'images/additional/';
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
         }
 
-        // Handle removed colors
-        if (isset($_POST['removed_colors']) && is_array($_POST['removed_colors'])) {
-            foreach ($_POST['removed_colors'] as $color_id) {
-                // Get color image path first
-                $color_image_query = "SELECT color_image_path FROM colors WHERE id = ? AND product_id = ?";
-                $stmt = mysqli_prepare($conn, $color_image_query);
-                mysqli_stmt_bind_param($stmt, "ii", $color_id, $product_id);
-                mysqli_stmt_execute($stmt);
-                mysqli_stmt_bind_result($stmt, $color_image_path);
-                if (mysqli_stmt_fetch($stmt)) {
-                    if (!empty($color_image_path) && file_exists($color_image_path)) {
-                        unlink($color_image_path);
-                    }
-                }
-                mysqli_stmt_close($stmt);
+        foreach ($_FILES['additional_images']['tmp_name'] as $key => $tmp_name) {
+            if ($_FILES['additional_images']['error'][$key] === UPLOAD_ERR_OK) {
+                $file_extension = pathinfo($_FILES['additional_images']['name'][$key], PATHINFO_EXTENSION);
+                $new_filename = uniqid() . '_additional.' . $file_extension;
+                $upload_path = $upload_dir . $new_filename;
 
-                // Delete the color record
-                $delete_color_query = "DELETE FROM colors WHERE id = ? AND product_id = ?";
-                $stmt = mysqli_prepare($conn, $delete_color_query);
-                mysqli_stmt_bind_param($stmt, "ii", $color_id, $product_id);
-                if (!mysqli_stmt_execute($stmt)) {
-                    throw new Exception('Failed to delete color: ' . mysqli_error($conn));
-                }
-                mysqli_stmt_close($stmt);
-            }
-        }
-
-        // Handle color updates and additions
-        if (isset($_POST['colors']) && is_array($_POST['colors'])) {
-            foreach ($_POST['colors'] as $color_id => $color_data) {
-                $color_name = mysqli_real_escape_string($conn, $color_data['name']);
-                
-                if ($color_id > 0) {
-                    // Update existing color
-                    if (isset($_FILES['colors']['name'][$color_id]) && $_FILES['colors']['error'][$color_id] == 0) {
-                        // Get old color image to delete
-                        $old_color_query = "SELECT color_image_path FROM colors WHERE id = ? AND product_id = ?";
-                        $stmt = mysqli_prepare($conn, $old_color_query);
-                        mysqli_stmt_bind_param($stmt, "ii", $color_id, $product_id);
-                        mysqli_stmt_execute($stmt);
-                        mysqli_stmt_bind_result($stmt, $old_color_path);
-                        if (mysqli_stmt_fetch($stmt) && !empty($old_color_path) && file_exists($old_color_path)) {
-                            unlink($old_color_path);
-                        }
-                        mysqli_stmt_close($stmt);
-
-                        // Process and save new color image
-                        $color_file = [
-                            'name' => $_FILES['colors']['name'][$color_id],
-                            'type' => $_FILES['colors']['type'][$color_id],
-                            'tmp_name' => $_FILES['colors']['tmp_name'][$color_id],
-                            'error' => $_FILES['colors']['error'][$color_id],
-                            'size' => $_FILES['colors']['size'][$color_id]
-                        ];
-                        $color_image_path = processAndSaveImage($color_file, 'colors', 'color');
-
-                        // Update color with new image
-                        $update_color_query = "UPDATE colors SET color_name = ?, color_image_path = ? WHERE id = ? AND product_id = ?";
-                        $stmt = mysqli_prepare($conn, $update_color_query);
-                        mysqli_stmt_bind_param($stmt, "ssii", $color_name, $color_image_path, $color_id, $product_id);
-                    } else {
-                        // Update color name only
-                        $update_color_query = "UPDATE colors SET color_name = ? WHERE id = ? AND product_id = ?";
-                        $stmt = mysqli_prepare($conn, $update_color_query);
-                        mysqli_stmt_bind_param($stmt, "sii", $color_name, $color_id, $product_id);
-                    }
-                } else {
-                    // Add new color
-                    if (isset($_FILES['colors']['name'][$color_id]) && $_FILES['colors']['error'][$color_id] == 0) {
-                        $color_file = [
-                            'name' => $_FILES['colors']['name'][$color_id],
-                            'type' => $_FILES['colors']['type'][$color_id],
-                            'tmp_name' => $_FILES['colors']['tmp_name'][$color_id],
-                            'error' => $_FILES['colors']['error'][$color_id],
-                            'size' => $_FILES['colors']['size'][$color_id]
-                        ];
-                        $color_image_path = processAndSaveImage($color_file, 'colors', 'color');
-
-                        $insert_color_query = "INSERT INTO colors (product_id, color_name, color_image_path) VALUES (?, ?, ?)";
-                        $stmt = mysqli_prepare($conn, $insert_color_query);
-                        mysqli_stmt_bind_param($stmt, "iss", $product_id, $color_name, $color_image_path);
-                    }
-                }
-
-                if (!mysqli_stmt_execute($stmt)) {
-                    throw new Exception('Failed to update/add color: ' . mysqli_error($conn));
-                }
-                mysqli_stmt_close($stmt);
-            }
-        }
-
-        // Handle additional images
-        if (isset($_FILES['additional_images'])) {
-            foreach ($_FILES['additional_images']['error'] as $key => $error) {
-                if ($error == UPLOAD_ERR_OK) {
-                    $additional_file = [
-                        'name' => $_FILES['additional_images']['name'][$key],
-                        'type' => $_FILES['additional_images']['type'][$key],
-                        'tmp_name' => $_FILES['additional_images']['tmp_name'][$key],
-                        'error' => $_FILES['additional_images']['error'][$key],
-                        'size' => $_FILES['additional_images']['size'][$key]
-                    ];
-                    $additional_image_path = processAndSaveImage($additional_file, 'additional', 'additional');
-
-                    $insert_image_query = "INSERT INTO product_images (product_id, image_path) VALUES (?, ?)";
-                    $stmt = mysqli_prepare($conn, $insert_image_query);
-                    mysqli_stmt_bind_param($stmt, "is", $product_id, $additional_image_path);
-                    if (!mysqli_stmt_execute($stmt)) {
-                        throw new Exception('Failed to add additional image: ' . mysqli_error($conn));
-                    }
+                if (move_uploaded_file($tmp_name, $upload_path)) {
+                    $insert_query = "INSERT INTO product_images (product_id, image_path) VALUES (?, ?)";
+                    $stmt = mysqli_prepare($conn, $insert_query);
+                    mysqli_stmt_bind_param($stmt, "is", $product_id, $upload_path);
+                    mysqli_stmt_execute($stmt);
                     mysqli_stmt_close($stmt);
                 }
             }
         }
+    }
 
-        // Handle removed additional images
-        if (isset($_POST['removed_additional_images']) && is_array($_POST['removed_additional_images'])) {
-            foreach ($_POST['removed_additional_images'] as $image_id) {
-                // Get image path first
-                $image_query = "SELECT image_path FROM product_images WHERE id = ? AND product_id = ?";
-                $stmt = mysqli_prepare($conn, $image_query);
-                mysqli_stmt_bind_param($stmt, "ii", $image_id, $product_id);
-                mysqli_stmt_execute($stmt);
-                mysqli_stmt_bind_result($stmt, $image_path);
-                if (mysqli_stmt_fetch($stmt)) {
-                    if (!empty($image_path) && file_exists($image_path)) {
-                        unlink($image_path);
+    // Handle removed colors
+    if (isset($_POST['removed_colors']) && is_array($_POST['removed_colors'])) {
+        foreach ($_POST['removed_colors'] as $color_id) {
+            // Get the image path before deleting
+            $get_path_query = "SELECT color_image_path FROM colors WHERE id = ? AND product_id = ?";
+            $stmt = mysqli_prepare($conn, $get_path_query);
+            mysqli_stmt_bind_param($stmt, "ii", $color_id, $product_id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_bind_result($stmt, $color_image_path);
+            if (mysqli_stmt_fetch($stmt)) {
+                safeDeleteFile($color_image_path);
+            }
+            mysqli_stmt_close($stmt);
+
+            // Delete from database
+            $delete_query = "DELETE FROM colors WHERE id = ? AND product_id = ?";
+            $stmt = mysqli_prepare($conn, $delete_query);
+            mysqli_stmt_bind_param($stmt, "ii", $color_id, $product_id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+        }
+    }
+
+    // Handle existing and new colors
+    if (isset($_POST['colors']) && is_array($_POST['colors'])) {
+        $upload_dir = 'images/colors/';
+        if (!file_exists($upload_dir)) {
+            mkdir($upload_dir, 0777, true);
+        }
+
+        foreach ($_POST['colors'] as $color_key => $color_data) {
+            $color_name = mysqli_real_escape_string($conn, $color_data['name']);
+            $is_new_color = strpos($color_key, 'new_') === 0;
+
+            if ($is_new_color) {
+                // Handle new color
+                if (isset($_FILES['colors']['name'][$color_key]['image']) && 
+                    $_FILES['colors']['error'][$color_key]['image'] === UPLOAD_ERR_OK) {
+                    
+                    $file_extension = pathinfo($_FILES['colors']['name'][$color_key]['image'], PATHINFO_EXTENSION);
+                    $new_filename = uniqid() . '_color.' . $file_extension;
+                    $upload_path = $upload_dir . $new_filename;
+
+                    if (move_uploaded_file($_FILES['colors']['tmp_name'][$color_key]['image'], $upload_path)) {
+                        $insert_query = "INSERT INTO colors (product_id, color_name, color_image_path) VALUES (?, ?, ?)";
+                        $stmt = mysqli_prepare($conn, $insert_query);
+                        mysqli_stmt_bind_param($stmt, "iss", $product_id, $color_name, $upload_path);
+                        mysqli_stmt_execute($stmt);
+                        mysqli_stmt_close($stmt);
                     }
                 }
-                mysqli_stmt_close($stmt);
+            } else {
+                // Handle existing color update
+                $color_id = intval($color_data['id']);
+                $update_query = "UPDATE colors SET color_name = ?";
+                $params = [$color_name];
+                $types = "s";
 
-                // Delete the image record
-                $delete_image_query = "DELETE FROM product_images WHERE id = ? AND product_id = ?";
-                $stmt = mysqli_prepare($conn, $delete_image_query);
-                mysqli_stmt_bind_param($stmt, "ii", $image_id, $product_id);
-                if (!mysqli_stmt_execute($stmt)) {
-                    throw new Exception('Failed to delete additional image: ' . mysqli_error($conn));
+                // Check if new image is uploaded for existing color
+                if (isset($_FILES['colors']['name'][$color_key]['image']) && 
+                    $_FILES['colors']['error'][$color_key]['image'] === UPLOAD_ERR_OK) {
+                    
+                    // Get and delete old image
+                    $old_image_query = "SELECT color_image_path FROM colors WHERE id = ? AND product_id = ?";
+                    $stmt = mysqli_prepare($conn, $old_image_query);
+                    mysqli_stmt_bind_param($stmt, "ii", $color_id, $product_id);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_bind_result($stmt, $old_image);
+                    if (mysqli_stmt_fetch($stmt)) {
+                        safeDeleteFile($old_image);
+                    }
+                    mysqli_stmt_close($stmt);
+
+                    $file_extension = pathinfo($_FILES['colors']['name'][$color_key]['image'], PATHINFO_EXTENSION);
+                    $new_filename = uniqid() . '_color.' . $file_extension;
+                    $upload_path = $upload_dir . $new_filename;
+
+                    if (move_uploaded_file($_FILES['colors']['tmp_name'][$color_key]['image'], $upload_path)) {
+                        $update_query .= ", color_image_path = ?";
+                        $params[] = $upload_path;
+                        $types .= "s";
+                    }
                 }
+
+                $update_query .= " WHERE id = ? AND product_id = ?";
+                $params[] = $color_id;
+                $params[] = $product_id;
+                $types .= "ii";
+
+                $stmt = mysqli_prepare($conn, $update_query);
+                mysqli_stmt_bind_param($stmt, $types, ...$params);
+                mysqli_stmt_execute($stmt);
                 mysqli_stmt_close($stmt);
             }
         }
-
-        mysqli_commit($conn);
-        echo json_encode(['success' => true, 'message' => 'Product updated successfully']);
-        
-    } catch (Exception $e) {
-        mysqli_rollback($conn);
-        error_log("Error in update_product.php: " . $e->getMessage());
-        echo json_encode(['success' => false, 'message' => $e->getMessage()]);
     }
-} else {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
-}
 
-mysqli_close($conn);
+    mysqli_commit($conn);
+    $response['success'] = true;
+    $response['message'] = 'Product updated successfully';
+
+} catch (Exception $e) {
+    mysqli_rollback($conn);
+    $response['message'] = 'Error: ' . $e->getMessage();
+    error_log('Error in update_product.php: ' . $e->getMessage());
+} finally {
+    echo json_encode($response);
+    mysqli_close($conn);
+}

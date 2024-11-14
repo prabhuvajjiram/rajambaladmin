@@ -52,6 +52,145 @@ document.addEventListener('DOMContentLoaded', function() {
     setupMobileMenu();
 });
 
+const styles = `
+.image-upload-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.existing-image, .color-box {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.existing-image img, .color-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-additional-image, .remove-color {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 16px;
+    z-index: 2;
+}
+
+.image-upload-box, .color-upload-box {
+    width: 100px;
+    height: 100px;
+    border: 2px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    background: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+.image-upload-box:hover, .color-upload-box:hover {
+    border-color: #666;
+    background: #f0f0f0;
+}
+
+.upload-icon {
+    font-size: 24px;
+    color: #666;
+    pointer-events: none;
+    user-select: none;
+}
+
+.hidden-file-input {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0,0,0,0) !important;
+    border: 0 !important;
+    visibility: hidden !important;
+}
+
+.color-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.color-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
+.color-item input[type="text"] {
+    width: 100px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.form-actions button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.form-actions button[type="submit"] {
+    background: #4CAF50;
+    color: white;
+    border: none;
+}
+
+.form-actions button.close {
+    background: #f44336;
+    color: white;
+    border: none;
+}
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.textContent = styles;
+document.head.appendChild(styleSheet);
+
 function showProductList() {
     document.getElementById('productList').style.display = 'block';
     document.getElementById('addProductForm').style.display = 'none';
@@ -420,7 +559,7 @@ function editProduct(productId) {
                     </div>
                     <div class="form-group">
                         <label for="edit_price">Price</label>
-                        <input type="number" id="edit_price" name="price" value="${product.price}" required>
+                        <input type="number" id="edit_price" name="price" value="${product.price}" step="0.01" required>
                     </div>
                     <div class="form-group">
                         <label for="edit_description">Description</label>
@@ -428,7 +567,9 @@ function editProduct(productId) {
                     </div>
                     <div class="form-group">
                         <label>Current Image</label>
-                        <img src="${product.image_path}" alt="${product.title}" style="max-width: 100px;">
+                        <div class="existing-image">
+                            <img src="${product.image_path}" alt="${product.title}">
+                        </div>
                         <label for="edit_image">Change Image (optional)</label>
                         <input type="file" id="edit_image" name="image" accept="image/*">
                     </div>
@@ -437,43 +578,54 @@ function editProduct(productId) {
                         <div id="edit_additional_images" class="image-upload-container">
                             ${product.additional_images.map(img => `
                                 <div class="existing-image">
-                                    <img src="${img}" alt="Additional Image">
-                                    <button type="button" class="remove-additional-image" data-path="${img}">×</button>
+                                    <img src="${img.path}" alt="Additional Image">
+                                    <button type="button" class="remove-additional-image" data-image-id="${img.id}">×</button>
                                 </div>
                             `).join('')}
-                            <div class="image-upload-box empty">
-                                <input type="file" name="new_additional_images[]" accept="image/*" multiple class="hidden-file-input">
+                            <div class="image-upload-box">
+                                <input type="file" name="additional_images[]" accept="image/*" class="hidden-file-input">
+                                <div class="upload-icon">+</div>
                             </div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Colors</label>
-                        <div id="edit_colors" class="color-inputs">
+                        <div id="edit_colors" class="color-container">
                             ${product.colors.map(color => `
-                                <div class="color-input">
-                                    <input type="text" name="color_names[]" value="${color.name}" placeholder="Color name">
-                                    <div class="color-image">
+                                <div class="color-item">
+                                    <input type="hidden" name="colors[${color.id}][id]" value="${color.id}">
+                                    <div class="color-box">
                                         <img src="${color.image_path}" alt="${color.name}">
-                                        <button type="button" class="remove-color" data-color="${color.name}">×</button>
+                                        <button type="button" class="remove-color" data-color-id="${color.id}">×</button>
                                     </div>
+                                    <input type="text" name="colors[${color.id}][name]" value="${color.name}" placeholder="Color name" required>
                                 </div>
                             `).join('')}
-                            <button type="button" id="edit_add_color" class="btn">Add Color</button>
+                            <div class="color-item">
+                                <div class="color-upload-box">
+                                    <input type="file" accept="image/*" class="new-color-input hidden-file-input">
+                                    <div class="upload-icon">+</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn">Update Product</button>
+                    <div class="form-actions">
+                        <button type="submit">Update Product</button>
+                        <button type="button" class="close">Cancel</button>
+                    </div>
                 `;
 
-                // Initialize image upload functionality for additional images
-                initializeEditImageUpload();
-                
-                // Add event listener for adding new colors
-                document.getElementById('edit_add_color')?.addEventListener('click', addEditColorInput);
-                
-                // Add event listeners for removing existing images and colors
+                // Setup event handlers
                 setupRemoveHandlers();
+                initializeEditImageUpload();
+                setupNewColorUpload();
+                
+                // Add click handler for cancel button
+                editForm.querySelector('.close').addEventListener('click', () => {
+                    editProductModal.style.display = 'none';
+                });
             } else {
-                editForm.innerHTML = `<p>Error loading product: ${data.message}</p>`;
+                editForm.innerHTML = '<p>Error loading product details. Please try again.</p>';
             }
         })
         .catch(error => {
@@ -482,97 +634,268 @@ function editProduct(productId) {
         });
 }
 
-function initializeEditImageUpload() {
-    const fileInputs = document.querySelectorAll('.image-upload-box input[type="file"]');
-    fileInputs.forEach(input => {
-        input.addEventListener('change', function(e) {
-            const box = this.parentElement;
-            if (this.files.length > 0) {
-                const file = this.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    box.innerHTML = `
-                        <img src="${e.target.result}" alt="Selected Image">
-                        <button type="button" class="remove-image">×</button>
-                        <input type="file" name="new_additional_images[]" accept="image/*" class="hidden-file-input">
-                    `;
-                    box.classList.remove('empty');
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-    });
-}
-
 function addEditColorInput() {
     const colorInputs = document.getElementById('edit_colors');
-    const newColorInput = document.createElement('div');
-    newColorInput.className = 'color-input';
-    newColorInput.innerHTML = `
-        <input type="text" name="color_names[]" placeholder="Color name" required>
-        <input type="file" name="color_images[]" accept="image/*" required>
+    const newColorId = 'new_' + Date.now();
+    
+    const colorInput = document.createElement('div');
+    colorInput.className = 'color-input';
+    colorInput.innerHTML = `
+        <input type="text" name="colors[${newColorId}][name]" placeholder="Color name" required>
+        <div class="color-image-preview"></div>
+        <input type="file" name="colors[${newColorId}][image]" accept="image/*" required>
         <button type="button" class="remove-color">×</button>
     `;
-    colorInputs.insertBefore(newColorInput, document.getElementById('edit_add_color'));
-    
-    // Add remove handler
-    newColorInput.querySelector('.remove-color').addEventListener('click', function() {
-        newColorInput.remove();
+
+    // Add preview for the new color image
+    const fileInput = colorInput.querySelector('input[type="file"]');
+    const preview = colorInput.querySelector('.color-image-preview');
+    fileInput.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                preview.innerHTML = `<img src="${event.target.result}" alt="Color Preview">`;
+            };
+            reader.readAsDataURL(this.files[0]);
+        }
     });
+
+    colorInput.querySelector('.remove-color').addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        colorInput.remove();
+    });
+
+    colorInputs.insertBefore(colorInput, document.getElementById('edit_add_color'));
 }
 
 function setupRemoveHandlers() {
-    // Setup handlers for removing additional images
+    // Handle removal of existing additional images
     document.querySelectorAll('.remove-additional-image').forEach(button => {
         button.addEventListener('click', function() {
-            const imagePath = this.dataset.path;
-            const imageDiv = this.parentElement;
-            // Add hidden input to track removed images
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'removed_additional_images[]';
-            hiddenInput.value = imagePath;
-            document.getElementById('editProductForm').appendChild(hiddenInput);
-            imageDiv.remove();
+            const imageDiv = this.closest('.existing-image');
+            if (imageDiv) {
+                const imageId = this.dataset.imageId;
+                if (imageId) {
+                    // Add hidden input to track deleted images
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'deleted_additional_images[]';
+                    hiddenInput.value = imageId;
+                    document.getElementById('editProductForm').appendChild(hiddenInput);
+                }
+                imageDiv.remove();
+            }
         });
     });
-    
-    // Setup handlers for removing colors
+
+    // Handle removal of existing colors
     document.querySelectorAll('.remove-color').forEach(button => {
         button.addEventListener('click', function() {
-            const colorName = this.dataset.color;
-            if (colorName) {
-                // Add hidden input to track removed colors
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'removed_colors[]';
-                hiddenInput.value = colorName;
-                document.getElementById('editProductForm').appendChild(hiddenInput);
+            const colorDiv = this.closest('.color-item');
+            if (colorDiv) {
+                const colorId = this.dataset.colorId;
+                if (colorId) {
+                    // Add hidden input to track removed colors
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'removed_colors[]';
+                    hiddenInput.value = colorId;
+                    document.getElementById('editProductForm').appendChild(hiddenInput);
+                }
+                colorDiv.remove();
             }
-            this.closest('.color-input').remove();
         });
+    });
+}
+
+function createNewUploadBox() {
+    const box = document.createElement('div');
+    box.className = 'image-upload-box';
+    box.innerHTML = `
+        <input type="file" name="additional_images[]" accept="image/*" class="hidden-file-input">
+        <div class="upload-icon">+</div>
+    `;
+    return box;
+}
+
+function setupNewColorUpload() {
+    const colorContainer = document.getElementById('edit_colors');
+    if (!colorContainer) return;
+
+    // Add click handler to all color upload boxes
+    colorContainer.querySelectorAll('.color-upload-box').forEach(box => {
+        box.addEventListener('click', function() {
+            const fileInput = this.querySelector('.new-color-input');
+            if (fileInput) {
+                fileInput.click();
+            }
+        });
+    });
+
+    // Handle color file input changes
+    colorContainer.addEventListener('change', function(e) {
+        const target = e.target;
+        if (target && target.classList.contains('new-color-input') && target.files && target.files[0]) {
+            const file = target.files[0];
+            const reader = new FileReader();
+            const newColorId = 'new_' + Date.now();
+            
+            reader.onload = function(event) {
+                const newColorItem = document.createElement('div');
+                newColorItem.className = 'color-item';
+                newColorItem.innerHTML = `
+                    <div class="color-box">
+                        <img src="${event.target.result}" alt="New Color">
+                        <button type="button" class="remove-color">×</button>
+                    </div>
+                    <input type="text" name="colors[${newColorId}][name]" placeholder="Color name" required>
+                    <input type="file" name="colors[${newColorId}][image]" accept="image/*" class="hidden-file-input">
+                `;
+
+                // Copy the file to the hidden input
+                const hiddenInput = newColorItem.querySelector('input[type="file"]');
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                hiddenInput.files = dataTransfer.files;
+
+                // Add remove handler
+                const removeButton = newColorItem.querySelector('.remove-color');
+                removeButton.addEventListener('click', function() {
+                    newColorItem.remove();
+                });
+
+                // Insert before the upload box container
+                const uploadBox = target.closest('.color-item');
+                colorContainer.insertBefore(newColorItem, uploadBox);
+
+                // Reset the file input
+                target.value = '';
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+function initializeEditImageUpload() {
+    const container = document.getElementById('edit_additional_images');
+    if (!container) return;
+
+    // Add click handler to all image upload boxes
+    function addUploadBoxClickHandler(uploadBox) {
+        uploadBox.addEventListener('click', function() {
+            const fileInput = this.querySelector('.hidden-file-input');
+            if (fileInput) {
+                fileInput.click();
+            }
+        });
+    }
+
+    // Add initial click handlers
+    container.querySelectorAll('.image-upload-box').forEach(addUploadBoxClickHandler);
+
+    // Create and add the upload box if it doesn't exist
+    function ensureUploadBox() {
+        if (!container.querySelector('.image-upload-box')) {
+            const uploadBox = document.createElement('div');
+            uploadBox.className = 'image-upload-box';
+            uploadBox.innerHTML = `
+                <input type="file" name="additional_images[]" accept="image/*" class="hidden-file-input">
+                <div class="upload-icon">+</div>
+            `;
+            
+            addUploadBoxClickHandler(uploadBox);
+            container.appendChild(uploadBox);
+        }
+    }
+
+    // Initial setup
+    ensureUploadBox();
+
+    // Add click handlers for remove buttons
+    container.querySelectorAll('.remove-additional-image').forEach(button => {
+        button.addEventListener('click', function() {
+            const imageDiv = this.closest('.existing-image');
+            if (imageDiv) {
+                const imageId = this.dataset.imageId;
+                if (imageId) {
+                    // Add hidden input to track removed images
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'removed_additional_images[]';
+                    hiddenInput.value = imageId;
+                    document.getElementById('editProductForm').appendChild(hiddenInput);
+                }
+                imageDiv.remove();
+                ensureUploadBox();
+            }
+        });
+    });
+
+    // Use event delegation for file inputs
+    container.addEventListener('change', function(e) {
+        const target = e.target;
+        if (target && target.classList.contains('hidden-file-input') && target.files && target.files[0]) {
+            const file = target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                // Create new image preview
+                const imagePreview = document.createElement('div');
+                imagePreview.className = 'existing-image';
+                imagePreview.innerHTML = `
+                    <img src="${event.target.result}" alt="Additional Image">
+                    <button type="button" class="remove-additional-image">×</button>
+                    <input type="file" name="additional_images[]" accept="image/*" class="hidden-file-input">
+                `;
+
+                // Copy the file to the hidden input
+                const hiddenInput = imagePreview.querySelector('input[type="file"]');
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                hiddenInput.files = dataTransfer.files;
+
+                // Add remove handler
+                const removeButton = imagePreview.querySelector('.remove-additional-image');
+                removeButton.addEventListener('click', function() {
+                    imagePreview.remove();
+                    ensureUploadBox();
+                });
+
+                // Add the new image preview before the upload box
+                const uploadBox = container.querySelector('.image-upload-box');
+                container.insertBefore(imagePreview, uploadBox);
+
+                // Reset the upload box input
+                target.value = '';
+            };
+
+            reader.readAsDataURL(file);
+        }
     });
 }
 
 function updateProduct(formData) {
-    // Add cache-busting to formData
-    formData.append('t', new Date().getTime());
+    // Log form data for debugging
+    console.log('Form data being sent:');
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
     
     fetch('update_product.php', {
         method: 'POST',
-        headers: {
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache'
-        },
         body: formData
     })
     .then(response => response.json())
     .then(data => {
+        console.log('Server response:', data); // Debug log
         if (data.success) {
             document.getElementById('editProductModal').style.display = 'none';
             refreshProducts();
             alert('Product updated successfully');
         } else {
+            console.error('Server error:', data);
             alert('Error updating product: ' + data.message);
         }
     })

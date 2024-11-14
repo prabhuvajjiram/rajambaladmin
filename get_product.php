@@ -62,15 +62,16 @@ try {
         
         mysqli_stmt_close($stmt);
         
-        // Get colors
-        $colors_query = "SELECT color_name, color_image_path FROM colors WHERE product_id = ?";
+        // Get colors with IDs
+        $colors_query = "SELECT id, color_name, color_image_path FROM colors WHERE product_id = ?";
         $stmt = mysqli_prepare($conn, $colors_query);
         if ($stmt) {
             mysqli_stmt_bind_param($stmt, "i", $product_id);
             if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_bind_result($stmt, $color_name, $color_image_path);
+                mysqli_stmt_bind_result($stmt, $color_id, $color_name, $color_image_path);
                 while (mysqli_stmt_fetch($stmt)) {
                     $product['colors'][] = [
+                        'id' => $color_id,
                         'name' => $color_name,
                         'image_path' => formatImagePath($color_image_path, 'colors')
                     ];
@@ -79,15 +80,18 @@ try {
             mysqli_stmt_close($stmt);
         }
         
-        // Get additional images
-        $images_query = "SELECT image_path FROM product_images WHERE product_id = ?";
+        // Get additional images with IDs
+        $images_query = "SELECT id, image_path FROM product_images WHERE product_id = ?";
         $stmt = mysqli_prepare($conn, $images_query);
         if ($stmt) {
             mysqli_stmt_bind_param($stmt, "i", $product_id);
             if (mysqli_stmt_execute($stmt)) {
-                mysqli_stmt_bind_result($stmt, $additional_image_path);
+                mysqli_stmt_bind_result($stmt, $image_id, $additional_image_path);
                 while (mysqli_stmt_fetch($stmt)) {
-                    $product['additional_images'][] = formatImagePath($additional_image_path, 'additional');
+                    $product['additional_images'][] = [
+                        'id' => $image_id,
+                        'path' => formatImagePath($additional_image_path, 'additional')
+                    ];
                 }
             }
             mysqli_stmt_close($stmt);
@@ -100,9 +104,10 @@ try {
     }
     
 } catch (Exception $e) {
+    $response['success'] = false;
     $response['message'] = $e->getMessage();
     error_log("Error in get_product.php: " . $e->getMessage());
 }
 
-mysqli_close($conn);
 echo json_encode($response);
+mysqli_close($conn);
