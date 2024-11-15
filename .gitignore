@@ -6,8 +6,5 @@ node_modules
 /images/colors/*
 /images/additional/*
 
-# Unnecessary files
-edit_product.php
-
 # Logs
 *.log
