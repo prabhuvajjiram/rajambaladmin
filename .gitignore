@@ -1,2 +1,13 @@
 node_modules
+
+# Image folders
+/images/*
 /images/products/*
+/images/colors/*
+/images/additional/*
+
+# Unnecessary files
+edit_product.php
+
+# Logs
+*.log
