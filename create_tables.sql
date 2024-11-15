@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS colors (
  color_name varchar(50) DEFAULT NULL,
  color_image_path varchar(255) DEFAULT NULL,
  PRIMARY KEY (id),
- KEY product_id (product_id)
+ KEY product_id (product_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS products (
@@ -28,13 +28,6 @@ CREATE TABLE IF NOT EXISTS products (
  PRIMARY KEY (id)
 );
 
-CREATE TABLE product_images (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT NOT NULL,
-    image_path VARCHAR(255) NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES products(id)
-);
-
 CREATE TABLE IF NOT EXISTS product_images (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
@@ -42,6 +35,20 @@ CREATE TABLE IF NOT EXISTS product_images (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
+
+-- Create feedback table
+CREATE TABLE IF NOT EXISTS feedback (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    comment TEXT NOT NULL,
+    status ENUM('active', 'inactive', 'pending') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Add indexes for better performance
+CREATE INDEX idx_feedback_status ON feedback(status);
+CREATE INDEX idx_feedback_created_at ON feedback(created_at);
 
 -- Insert a new admin user with a hashed password
 -- Replace 'your_username' with the desired username

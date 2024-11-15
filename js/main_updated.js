@@ -115,7 +115,7 @@ function createProductCard(product) {
         <h3>${product.title}</h3>
         <p class="price">₹${product.price}</p>
         ${colorOptionsHtml}
-        <button class="add-to-cart" data-product-id="${product.id}">
+        <button class="gradient-btn add-to-cart-btn" data-product-id="${product.id}">
             <i class="material-icons">shopping_cart</i>
             Add to Cart
         </button>
@@ -271,7 +271,7 @@ function createProductCard(product) {
     }
 
     // Add to cart functionality
-    const addToCartBtn = productCard.querySelector('.add-to-cart');
+    const addToCartBtn = productCard.querySelector('.add-to-cart-btn');
     if (addToCartBtn) {
         addToCartBtn.addEventListener('click', () => {
             const selectedColorOption = productCard.querySelector('.color-option.selected');

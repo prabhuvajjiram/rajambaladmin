@@ -209,3 +209,146 @@
         width: 100%;
     }
 }
+
+/* Feedback Section */
+.feedback-section {
+    padding: 50px 0;
+    background-color: #f9f9f9;
+}
+
+.feedback-container {
+    display: flex;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.feedback-form {
+    flex: 1;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-display {
+    flex: 1;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-list {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.feedback-item {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.feedback-item:last-child {
+    border-bottom: none;
+}
+
+.feedback-name {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.feedback-comment {
+    color: #666;
+    line-height: 1.5;
+}
+
+.feedback-date {
+    font-size: 0.8em;
+    color: #999;
+    margin-top: 5px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    height: 120px;
+    resize: vertical;
+}
+
+.submit-feedback {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.submit-feedback:hover {
+    background-color: #45a049;
+}
+
+.submit-feedback:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scrollbar Styles */
+.feedback-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.feedback-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.feedback-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.feedback-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .feedback-container {
+        flex-direction: column;
+    }
+    
+    .feedback-form,
+    .feedback-display {
+        width: 100%;
+    }
+}
