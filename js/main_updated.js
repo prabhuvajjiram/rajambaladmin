@@ -62,6 +62,12 @@ function createProductCard(product) {
     // Store the original product image
     const originalImage = product.image_path;
     
+    // Create array of all product images including color variants
+    let productImages = [originalImage];
+    if (product.colors && product.colors.length > 0) {
+        productImages = productImages.concat(product.colors.map(color => color.image_path));
+    }
+    
     // Only create color options if the product has colors
     let colorOptionsHtml = '';
     if (product.colors && product.colors.length > 0) {
@@ -98,10 +104,12 @@ function createProductCard(product) {
                      class="main-product-image" 
                      data-original-image="${originalImage}"
                      onerror="this.onerror=null; this.src='images/placeholder.jpg'">
-                <div class="image-navigation" style="display: none;">
+                ${productImages.length > 1 ? `
+                <div class="image-navigation">
                     <button class="nav-arrow prev">❮</button>
                     <button class="nav-arrow next">❯</button>
                 </div>
+                ` : ''}
             </div>
         </div>
         <h3>${product.title}</h3>
@@ -113,12 +121,135 @@ function createProductCard(product) {
         </button>
     `;
 
+    // Set up image navigation
+    let currentImageIndex = 0;
+    const mainImage = productCard.querySelector('.main-product-image');
+    
+    if (productImages.length > 1) {
+        const prevButton = productCard.querySelector('.nav-arrow.prev');
+        const nextButton = productCard.querySelector('.nav-arrow.next');
+
+        prevButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent modal from opening
+            currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
+            mainImage.src = productImages[currentImageIndex];
+        });
+
+        nextButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent modal from opening
+            currentImageIndex = (currentImageIndex + 1) % productImages.length;
+            mainImage.src = productImages[currentImageIndex];
+        });
+    }
+
+    // Add click event to open modal
+    mainImage.addEventListener('click', function() {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        const captionText = document.getElementById('imageCaption');
+        
+        modal.style.display = "block";
+        modalImg.src = this.src;
+        captionText.innerHTML = product.title;
+
+        // Add zoom functionality
+        let scale = 1;
+        const zoomStep = 0.2;
+        
+        // Remove existing controls if any
+        const existingZoomControls = modal.querySelector('.zoom-controls');
+        const existingNavigation = modal.querySelector('.modal-navigation');
+        if (existingZoomControls) existingZoomControls.remove();
+        if (existingNavigation) existingNavigation.remove();
+        
+        // Add zoom controls
+        const zoomControls = document.createElement('div');
+        zoomControls.className = 'zoom-controls';
+        zoomControls.innerHTML = `
+            <button class="zoom-button zoom-in">+</button>
+            <button class="zoom-button zoom-out">-</button>
+        `;
+        modal.appendChild(zoomControls);
+
+        // Add modal navigation if there are multiple images
+        if (productImages.length > 1) {
+            const modalNavigation = document.createElement('div');
+            modalNavigation.className = 'modal-navigation';
+            modalNavigation.innerHTML = `
+                <button class="modal-nav-arrow modal-prev">❮</button>
+                <button class="modal-nav-arrow modal-next">❯</button>
+            `;
+            modal.appendChild(modalNavigation);
+
+            const modalPrev = modal.querySelector('.modal-prev');
+            const modalNext = modal.querySelector('.modal-next');
+
+            modalPrev.onclick = function(e) {
+                e.stopPropagation();
+                currentImageIndex = (currentImageIndex - 1 + productImages.length) % productImages.length;
+                modalImg.src = productImages[currentImageIndex];
+                mainImage.src = productImages[currentImageIndex]; // Update thumbnail too
+            };
+
+            modalNext.onclick = function(e) {
+                e.stopPropagation();
+                currentImageIndex = (currentImageIndex + 1) % productImages.length;
+                modalImg.src = productImages[currentImageIndex];
+                mainImage.src = productImages[currentImageIndex]; // Update thumbnail too
+            };
+
+            // Add keyboard navigation
+            const handleKeyPress = function(e) {
+                if (e.key === 'ArrowLeft') {
+                    modalPrev.click();
+                } else if (e.key === 'ArrowRight') {
+                    modalNext.click();
+                } else if (e.key === 'Escape') {
+                    closeModal();
+                }
+            };
+            document.addEventListener('keydown', handleKeyPress);
+        }
+
+        const zoomIn = modal.querySelector('.zoom-in');
+        const zoomOut = modal.querySelector('.zoom-out');
+        
+        zoomIn.onclick = function(e) {
+            e.stopPropagation();
+            scale += zoomStep;
+            modalImg.style.transform = `scale(${scale})`;
+        };
+        
+        zoomOut.onclick = function(e) {
+            e.stopPropagation();
+            if (scale > 1) {
+                scale -= zoomStep;
+                modalImg.style.transform = `scale(${scale})`;
+            }
+        };
+
+        // Reset zoom when closing modal
+        const closeBtn = modal.querySelector('.close');
+        const closeModal = function() {
+            modal.style.display = "none";
+            scale = 1;
+            modalImg.style.transform = `scale(${scale})`;
+            zoomControls.remove();
+            if (existingNavigation) modalNavigation.remove();
+            // Remove keyboard event listener
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+
+        closeBtn.onclick = closeModal;
+        modal.onclick = function(e) {
+            if (e.target === modal) {
+                closeModal();
+            }
+        };
+    });
+
     // Handle color option clicks if colors exist
     const colorOptions = productCard.querySelectorAll('.color-option');
-    const mainImage = productCard.querySelector('.main-product-image');
-    let selectedColor = null;
-    let selectedColorImage = originalImage;
-    
     if (colorOptions.length > 0) {
         colorOptions.forEach(option => {
             option.addEventListener('click', function() {
@@ -128,18 +259,18 @@ function createProductCard(product) {
                 // Update selected state
                 colorOptions.forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
-                selectedColor = colorName === 'original' ? null : colorName;
-                selectedColorImage = colorImage;
                 
                 // Update main image with color image
                 if (mainImage && colorImage) {
                     mainImage.src = colorImage;
+                    // Reset current image index to match the selected color
+                    currentImageIndex = productImages.indexOf(colorImage);
                 }
             });
         });
     }
 
-    // Add to cart button
+    // Add to cart functionality
     const addToCartBtn = productCard.querySelector('.add-to-cart');
     if (addToCartBtn) {
         addToCartBtn.addEventListener('click', () => {
@@ -149,16 +280,12 @@ function createProductCard(product) {
             if (hasColorOptions && selectedColorOption) {
                 const colorName = selectedColorOption.dataset.colorName;
                 const colorImage = selectedColorOption.dataset.colorImage;
-                
                 addToCart(product, colorName === 'original' ? null : colorName, colorImage);
             } else {
                 addToCart(product, null, originalImage);
             }
         });
     }
-
-    // Set up image preview and navigation
-    setupImagePreview(productCard, product);
 
     return productCard;
 }
